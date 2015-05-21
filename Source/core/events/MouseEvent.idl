@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2006, 2007 Apple Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
+// http://www.w3.org/TR/DOM-Level-3-Events/#interface-MouseEvent
+
+[
+    Constructor(DOMString type, optional MouseEventInit eventInitDict),
+    ConstructorCallWith=ScriptState,
+] interface MouseEvent : UIEvent {
+    readonly attribute long             screenX;
+    readonly attribute long             screenY;
+    readonly attribute long             clientX;
+    readonly attribute long             clientY;
+    readonly attribute boolean          ctrlKey;
+    readonly attribute boolean          shiftKey;
+    readonly attribute boolean          altKey;
+    readonly attribute boolean          metaKey;
+    readonly attribute unsigned short   button;
+    [RuntimeEnabled=MouseEventButtonsAttribute] readonly attribute unsigned short   buttons;
+    readonly attribute EventTarget?     relatedTarget;
+    [MeasureAs=MouseEventMovementX] readonly attribute long             movementX;
+    [MeasureAs=MouseEventMovementY] readonly attribute long             movementY;
+    [MeasureAs=PrefixedMouseEventMovementX, ImplementedAs=movementX] readonly attribute long webkitMovementX;
+    [MeasureAs=PrefixedMouseEventMovementY, ImplementedAs=movementY] readonly attribute long webkitMovementY;
+
+     [CallWith=ScriptState] void initMouseEvent([Default=Undefined] optional DOMString type,
+                                       [Default=Undefined] optional boolean canBubble,
+                                       [Default=Undefined] optional boolean cancelable,
+                                       [Default=Undefined] optional Window view,
+                                       [Default=Undefined] optional long detail,
+                                       [Default=Undefined] optional long screenX,
+                                       [Default=Undefined] optional long screenY,
+                                       [Default=Undefined] optional long clientX,
+                                       [Default=Undefined] optional long clientY,
+                                       [Default=Undefined] optional boolean ctrlKey,
+                                       [Default=Undefined] optional boolean altKey,
+                                       [Default=Undefined] optional boolean shiftKey,
+                                       [Default=Undefined] optional boolean metaKey,
+                                       [Default=Undefined] optional unsigned short button,
+                                       [Default=Undefined] optional EventTarget relatedTarget);
+
+    // Non-standard
+    [MeasureAs=MouseEventOffsetX] readonly attribute long offsetX;
+    [MeasureAs=MouseEventOffsetY] readonly attribute long offsetY;
+    [MeasureAs=MouseEventX] readonly attribute long x;
+    [MeasureAs=MouseEventY] readonly attribute long y;
+    [MeasureAs=MouseEventFromElement] readonly attribute Node fromElement;
+    [MeasureAs=MouseEventToElement] readonly attribute Node toElement;
+    [MeasureAs=MouseEventWhich] readonly attribute long which;
+
+    // FIXME: this belongs on the DragEvent interface
+    readonly attribute DataTransfer dataTransfer;
+};

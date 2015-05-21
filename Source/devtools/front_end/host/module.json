@@ -1,0 +1,12 @@
+{
+    "dependencies": [
+        "common",
+        "platform"
+    ],
+    "scripts": [
+        "InspectorFrontendHost.js",
+        "Platform.js",
+        "ResourceLoader.js",
+        "UserMetrics.js"
+    ]
+}
