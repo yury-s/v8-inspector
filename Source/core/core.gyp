@@ -885,5 +885,46 @@
         }],
       ],
     },
+
+
+    {
+      # GN version: //third_party/WebKit/Source/core:core
+      'target_name': 'v8inspector',
+      'type': 'none',
+      'dependencies': [
+        'v8inspector_remaining',
+        # Exported.
+        'webcore_generated',
+        '../platform/blink_platform.gyp:blink_platform',
+        '../wtf/wtf.gyp:wtf',
+        '<(DEPTH)/url/url.gyp:url_lib',
+        '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
+      ],
+      'export_dependent_settings': [
+        'webcore_generated',
+        '../platform/blink_platform.gyp:blink_platform',
+        '../wtf/wtf.gyp:wtf',
+        '<(DEPTH)/url/url.gyp:url_lib',
+        '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
+      ],
+      'direct_dependent_settings': {
+        'include_dirs': [
+          '<@(webcore_include_dirs)',
+        ],
+      },
+    },
+
+    {
+      'target_name': 'v8inspector_remaining',
+      'type': 'static_library',
+      'dependencies': [
+        'webcore_prerequisites',
+      ],
+      'sources': [
+        '<@(v8inspector_non_rendering_files)',
+      ],
+      # Disable c4267 warnings until we fix size_t to int truncations.
+      'msvs_disabled_warnings': [ 4267, 4334, ],
+    },
   ],  # targets
 }

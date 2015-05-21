@@ -27,32 +27,38 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
 {
     'includes': [
-        '../Source/build/features.gypi',
+        '../bindings/bindings.gypi',
+        '../build/features.gypi',
+        '../build/scripts/scripts.gypi',
+        '../core/core.gypi',
+        '../platform/blink_platform.gypi',
+        '../wtf/wtf.gypi',
     ],
     'targets': [
         {
-            # GN version: //third_party/WebKit/public:all_blink
-            'target_name': 'all_blink',
-            'type': 'none',
+            'target_name': 'v8inspector_main',
+            'type': 'executable',
             'dependencies': [
-                '../Source/platform/blink_platform_tests.gyp:blink_heap_unittests',
-                '../Source/platform/blink_platform_tests.gyp:blink_platform_unittests',
-                '../Source/web/web_tests.gyp:webkit_unit_tests',
-                '../Source/wtf/wtf_tests.gyp:wtf_unittests',
-                '../Source/web/web_v8inspector.gyp:v8inspector_main',
+                '../config.gyp:config',
+                '../platform/blink_platform.gyp:blink_platform',
+                '../web/web.gyp:blink_web',
+                '../core/core.gyp:webcore',
+                '../core/core.gyp:webcore_generated',
             ],
-            'conditions': [
-                ['OS=="android"', {
-                    'dependencies': [
-                        '../Source/platform/blink_platform_tests.gyp:blink_heap_unittests_apk',
-                        '../Source/platform/blink_platform_tests.gyp:blink_platform_unittests_apk',
-                        '../Source/web/web_tests.gyp:webkit_unit_tests_apk',
-                        '../Source/wtf/wtf_tests.gyp:wtf_unittests_apk',
-                    ],
-                }],
+            'sources': [
+                'V8InspectorMain.cpp',
+            ],
+            'include_dirs': [
+                '../',
+            ],
+            'defines': [
+                'BLINK_IMPLEMENTATION=1',
+                'INSIDE_BLINK',
             ],
         },
+
     ],
 }
