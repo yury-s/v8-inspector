@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 #include "config.h"
 
-#include "web/V8Inspector.h"
+#include "core/inspector/WorkerInspectorController.h"
 #include <stdio.h>
 
 using namespace blink;
 
 int main()
 {
-    V8Inspector* agent = new V8Inspector(nullptr);
+    WorkerInspectorController* agent = new WorkerInspectorController(nullptr);
     fprintf(stderr, "V8 inspector is running %p.\n", &agent);
     return 0;
 }

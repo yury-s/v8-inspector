@@ -41,7 +41,6 @@
                 '../Source/platform/blink_platform_tests.gyp:blink_platform_unittests',
                 '../Source/web/web_tests.gyp:webkit_unit_tests',
                 '../Source/wtf/wtf_tests.gyp:wtf_unittests',
-                '../Source/web/web_v8inspector.gyp:v8inspector_main',
             ],
             'conditions': [
                 ['OS=="android"', {
