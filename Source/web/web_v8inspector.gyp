@@ -50,6 +50,8 @@
             ],
             'sources': [
                 'V8InspectorMain.cpp',
+                'V8Inspector.cpp',
+                'V8Inspector.h',
             ],
             'include_dirs': [
                 '../',
