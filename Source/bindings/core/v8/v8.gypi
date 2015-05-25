@@ -5,6 +5,7 @@
 {
     'includes': [
         'custom/custom.gypi',
+        '../../modules/v8/generated.gypi',
     ],
     'variables': {
         'bindings_core_v8_dir': '.',

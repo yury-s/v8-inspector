@@ -13,6 +13,10 @@
     '../../../bindings/core/core.gypi',
     '../../../bindings/core/generated.gypi',
     '../../../bindings/core/idl.gypi',
+    # FIXME: need info about modules IDL files because some core IDL files
+    # depend on modules IDL files  http://crbug.com/358074
+    '../../../bindings/modules/idl.gypi',
+    '../../../bindings/modules/modules.gypi',
     '../../../bindings/scripts/scripts.gypi',
     '../../../core/core.gypi',
     'generated.gypi',
@@ -30,8 +34,14 @@
     'dependencies': [
       '../../../core/core_generated.gyp:generated_testing_idls',
       '../generated.gyp:core_global_constructors_idls',
+      # FIXME: should not depend on modules, but partial interface definitions
+      # in modules change bindings for core http://crbug.com/358074
+      '../../modules/generated.gyp:modules_global_constructors_idls',
       '<(bindings_scripts_dir)/scripts.gyp:cached_jinja_templates',
       '<(bindings_scripts_dir)/scripts.gyp:cached_lex_yacc_tables',
+      # FIXME: should be interfaces_info_core (w/o modules)
+      # http://crbug.com/358074
+      '../../modules/generated.gyp:interfaces_info',
     ],
     'sources': [
       '<@(core_interface_idl_files)',
@@ -49,7 +59,17 @@
         # [ImplementedAs]) changes, we rebuild all files, since we're not
         # computing dependencies file-by-file in the build.
         # This data is generally stable.
+        '<(bindings_modules_output_dir)/InterfacesInfoOverall.pickle',
         '<(bindings_core_output_dir)/ComponentInfoCore.pickle',
+        # Further, if any dependency (partial interface or implemented
+        # interface) changes, rebuild everything, since every IDL potentially
+        # depends on them, because we're not computing dependencies
+        # file-by-file.
+        # FIXME: This is too conservative, and causes excess rebuilds:
+        # compute this file-by-file.  http://crbug.com/341748
+        # FIXME: should be core_all_dependency_idl_files only, but some core IDL
+        # files depend on modules IDL files  http://crbug.com/358074
+        '<@(all_dependency_idl_files)',
       ],
       'outputs': [
         '<(bindings_core_v8_output_dir)/V8<(RULE_INPUT_ROOT).cpp',
@@ -113,6 +133,7 @@
       '<(bindings_scripts_dir)/scripts.gyp:cached_jinja_templates',
       '<(bindings_scripts_dir)/scripts.gyp:cached_lex_yacc_tables',
       '../../core/generated.gyp:interfaces_info_individual_core',
+      '../../modules/generated.gyp:interfaces_info',
     ],
     'sources': [
       '<@(core_dictionary_idl_files)',
@@ -130,6 +151,7 @@
         '<@(idl_cache_files)',
         '<@(idl_compiler_files)',
         '<(bindings_dir)/IDLExtendedAttributes.txt',
+        '<(bindings_modules_output_dir)/InterfacesInfoOverall.pickle',
         '<(bindings_core_output_dir)/ComponentInfoCore.pickle',
       ],
       'outputs': [
