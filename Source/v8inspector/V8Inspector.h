@@ -7,7 +7,6 @@
 
 #include "core/inspector/InspectorBaseAgent.h"
 #include "core/inspector/InspectorRuntimeAgent.h"
-#include "wtf/FastAllocBase.h"
 #include "wtf/Forward.h"
 #include "wtf/Noncopyable.h"
 #include "wtf/OwnPtr.h"
@@ -23,15 +22,13 @@ class InspectorFrontendChannel;
 class InspectorStateClient;
 class InstrumentingAgents;
 class WorkerDebuggerAgent;
-class WorkerGlobalScope;
 class WorkerRuntimeAgent;
 class WorkerThreadDebugger;
 
-class V8Inspector : public RefCountedWillBeGarbageCollectedFinalized<V8Inspector>, public InspectorRuntimeAgent::Client {
+class V8Inspector : public RefCounted<V8Inspector>, public InspectorRuntimeAgent::Client {
     WTF_MAKE_NONCOPYABLE(V8Inspector);
-    WTF_MAKE_FAST_ALLOCATED_WILL_BE_REMOVED(V8Inspector);
 public:
-    explicit V8Inspector(WorkerGlobalScope*);
+    explicit V8Inspector();
     ~V8Inspector();
     DECLARE_TRACE();
 
@@ -46,13 +43,10 @@ public:
     void pauseOnStart();
 
 private:
-    friend InstrumentingAgents* instrumentationForWorkerGlobalScope(WorkerGlobalScope*);
-
     // InspectorRuntimeAgent::Client implementation.
     void resumeStartup() override;
     bool isRunRequired() override;
 
-    RawPtrWillBeMember<WorkerGlobalScope> m_workerGlobalScope;
     OwnPtr<InspectorStateClient> m_stateClient;
     OwnPtrWillBeMember<InspectorCompositeState> m_state;
     RefPtrWillBeMember<InstrumentingAgents> m_instrumentingAgents;
