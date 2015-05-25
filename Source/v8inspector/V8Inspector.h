@@ -14,13 +14,11 @@
 
 namespace blink {
 
-class AsyncCallTracker;
 class InjectedScriptManager;
 class InspectorBackendDispatcher;
 class InspectorFrontend;
 class InspectorFrontendChannel;
 class InspectorStateClient;
-class InstrumentingAgents;
 class WorkerDebuggerAgent;
 class WorkerRuntimeAgent;
 class WorkerThreadDebugger;
@@ -49,7 +47,6 @@ private:
 
     OwnPtr<InspectorStateClient> m_stateClient;
     OwnPtrWillBeMember<InspectorCompositeState> m_state;
-    RefPtrWillBeMember<InstrumentingAgents> m_instrumentingAgents;
     OwnPtrWillBeMember<InjectedScriptManager> m_injectedScriptManager;
     OwnPtrWillBeMember<WorkerThreadDebugger> m_workerThreadDebugger;
     InspectorAgentRegistry m_agents;
@@ -57,7 +54,6 @@ private:
     OwnPtr<InspectorFrontend> m_frontend;
     RefPtrWillBeMember<InspectorBackendDispatcher> m_backendDispatcher;
     RawPtrWillBeMember<WorkerDebuggerAgent> m_workerDebuggerAgent;
-    OwnPtrWillBeMember<AsyncCallTracker> m_asyncCallTracker;
     RawPtrWillBeMember<WorkerRuntimeAgent> m_workerRuntimeAgent;
     bool m_paused;
 };

@@ -8,19 +8,11 @@
 
 #include "core/InspectorBackendDispatcher.h"
 #include "core/InspectorFrontend.h"
-#include "core/inspector/AsyncCallTracker.h"
 #include "core/inspector/InjectedScriptHost.h"
 #include "core/inspector/InjectedScriptManager.h"
-#include "core/inspector/InspectorConsoleAgent.h"
 #include "core/inspector/InspectorFrontendChannel.h"
-#include "core/inspector/InspectorHeapProfilerAgent.h"
-#include "core/inspector/InspectorInstrumentation.h"
-#include "core/inspector/InspectorProfilerAgent.h"
 #include "core/inspector/InspectorState.h"
 #include "core/inspector/InspectorStateClient.h"
-#include "core/inspector/InspectorTimelineAgent.h"
-#include "core/inspector/InstrumentingAgents.h"
-#include "core/inspector/WorkerConsoleAgent.h"
 #include "core/inspector/WorkerDebuggerAgent.h"
 #include "core/inspector/WorkerRuntimeAgent.h"
 #include "core/workers/WorkerReportingProxy.h"
@@ -68,10 +60,9 @@ public:
 V8Inspector::V8Inspector()
     : m_stateClient(adoptPtr(new StateClientImpl()))
     , m_state(adoptPtrWillBeNoop(new InspectorCompositeState(m_stateClient.get())))
-    , m_instrumentingAgents(InstrumentingAgents::create())
     , m_injectedScriptManager(InjectedScriptManager::createForWorker())
     , m_workerThreadDebugger(WorkerThreadDebugger::create(nullptr))
-    , m_agents(m_instrumentingAgents.get(), m_state.get())
+    , m_agents(m_state.get())
     , m_paused(false)
 {
     OwnPtrWillBeRawPtr<WorkerRuntimeAgent> workerRuntimeAgent = WorkerRuntimeAgent::create(m_injectedScriptManager.get(), m_workerThreadDebugger->debugger(), nullptr, this);
@@ -81,18 +72,8 @@ V8Inspector::V8Inspector()
     OwnPtrWillBeRawPtr<WorkerDebuggerAgent> workerDebuggerAgent = WorkerDebuggerAgent::create(m_workerThreadDebugger.get(), nullptr, m_injectedScriptManager.get());
     m_workerDebuggerAgent = workerDebuggerAgent.get();
     m_agents.append(workerDebuggerAgent.release());
-    m_asyncCallTracker = adoptPtrWillBeNoop(new AsyncCallTracker(m_workerDebuggerAgent, m_instrumentingAgents.get()));
 
-    m_agents.append(InspectorProfilerAgent::create(m_injectedScriptManager.get(), 0));
-    m_agents.append(InspectorHeapProfilerAgent::create(m_injectedScriptManager.get()));
-
-    OwnPtrWillBeRawPtr<WorkerConsoleAgent> workerConsoleAgent = WorkerConsoleAgent::create(m_injectedScriptManager.get(), nullptr);
-    WorkerConsoleAgent* workerConsoleAgentPtr = workerConsoleAgent.get();
-    m_agents.append(workerConsoleAgent.release());
-
-    m_agents.append(InspectorTimelineAgent::create());
-
-    m_injectedScriptManager->injectedScriptHost()->init(workerConsoleAgentPtr, m_workerDebuggerAgent, nullptr, m_workerThreadDebugger->debugger(), adoptPtr(new InjectedScriptHostClientImpl()));
+    m_injectedScriptManager->injectedScriptHost()->init(nullptr, m_workerDebuggerAgent, nullptr, m_workerThreadDebugger->debugger(), adoptPtr(new InjectedScriptHostClientImpl()));
 }
 
 V8Inspector::~V8Inspector()
@@ -113,7 +94,6 @@ void V8Inspector::connectFrontend()
     m_backendDispatcher = InspectorBackendDispatcher::create(m_frontendChannel.get());
     m_agents.registerInDispatcher(m_backendDispatcher.get());
     m_agents.setFrontend(m_frontend.get());
-    InspectorInstrumentation::frontendCreated();
 }
 
 void V8Inspector::disconnectFrontend()
@@ -127,7 +107,6 @@ void V8Inspector::disconnectFrontend()
     m_state->mute();
     m_agents.clearFrontend();
     m_frontend.clear();
-    InspectorInstrumentation::frontendDeleted();
     m_frontendChannel.clear();
 }
 
@@ -148,7 +127,6 @@ void V8Inspector::dispatchMessageFromFrontend(const String& message)
 
 void V8Inspector::dispose()
 {
-    m_instrumentingAgents->reset();
     disconnectFrontend();
 }
 

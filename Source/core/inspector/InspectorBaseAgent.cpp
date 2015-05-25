@@ -50,26 +50,23 @@ InspectorAgent::~InspectorAgent()
 
 DEFINE_TRACE(InspectorAgent)
 {
-    visitor->trace(m_instrumentingAgents);
     visitor->trace(m_state);
 }
 
-void InspectorAgent::appended(InstrumentingAgents* instrumentingAgents, InspectorState* inspectorState)
+void InspectorAgent::appended(InspectorState* inspectorState)
 {
-    m_instrumentingAgents = instrumentingAgents;
     m_state = inspectorState;
     init();
 }
 
-InspectorAgentRegistry::InspectorAgentRegistry(InstrumentingAgents* instrumentingAgents, InspectorCompositeState* inspectorState)
-    : m_instrumentingAgents(instrumentingAgents)
-    , m_inspectorState(inspectorState)
+InspectorAgentRegistry::InspectorAgentRegistry(InspectorCompositeState* inspectorState)
+    : m_inspectorState(inspectorState)
 {
 }
 
 void InspectorAgentRegistry::append(PassOwnPtrWillBeRawPtr<InspectorAgent> agent)
 {
-    agent->appended(m_instrumentingAgents, m_inspectorState->createAgentState(agent->name()));
+    agent->appended(m_inspectorState->createAgentState(agent->name()));
     m_agents.append(agent);
 }
 
@@ -111,7 +108,6 @@ void InspectorAgentRegistry::flushPendingProtocolNotifications()
 
 DEFINE_TRACE(InspectorAgentRegistry)
 {
-    visitor->trace(m_instrumentingAgents);
     visitor->trace(m_inspectorState);
 #if ENABLE(OILPAN)
     visitor->trace(m_agents);

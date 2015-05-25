@@ -18,8 +18,9 @@
             'dependencies': [
                 '../config.gyp:config',
                 '../platform/blink_platform.gyp:blink_platform',
-                '../core/core.gyp:webcore', # Replace with custom list of files.
-                '../core/core.gyp:webcore_generated',
+#                '../core/core.gyp:webcore', # Replace with custom list of files.
+#                '../core/core.gyp:webcore_generated',
+                '../core/core.gyp:webcore_v8inspector',
                 '../wtf/wtf.gyp:wtf',
             ],
             'sources': [

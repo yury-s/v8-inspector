@@ -45,7 +45,6 @@
 #include "core/inspector/InjectedScript.h"
 #include "core/inspector/InjectedScriptManager.h"
 #include "core/inspector/InspectorState.h"
-#include "core/inspector/InstrumentingAgents.h"
 #include "core/inspector/JavaScriptCallFrame.h"
 #include "core/inspector/ScriptAsyncCallStack.h"
 #include "core/inspector/ScriptCallFrame.h"
@@ -170,9 +169,6 @@ InspectorDebuggerAgent::InspectorDebuggerAgent(InjectedScriptManager* injectedSc
 
 InspectorDebuggerAgent::~InspectorDebuggerAgent()
 {
-#if !ENABLE(OILPAN)
-    ASSERT(!m_instrumentingAgents->inspectorDebuggerAgent());
-#endif
 }
 
 void InspectorDebuggerAgent::init()
@@ -193,8 +189,6 @@ bool InspectorDebuggerAgent::checkEnabled(ErrorString* errorString)
 
 void InspectorDebuggerAgent::enable()
 {
-    m_instrumentingAgents->setInspectorDebuggerAgent(this);
-
     startListeningV8Debugger();
     // FIXME(WK44513): breakpoints activated flag should be synchronized between all front-ends
     debugger().setBreakpointsActivated(true);
@@ -212,7 +206,6 @@ void InspectorDebuggerAgent::disable()
     m_state->setBoolean(DebuggerAgentState::skipContentScripts, false);
     m_state->setLong(DebuggerAgentState::asyncCallStackDepth, 0);
     m_state->setBoolean(DebuggerAgentState::promiseTrackerEnabled, false);
-    m_instrumentingAgents->setInspectorDebuggerAgent(0);
 
     stopListeningV8Debugger();
     clear();

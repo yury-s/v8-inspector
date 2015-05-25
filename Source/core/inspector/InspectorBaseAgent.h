@@ -33,7 +33,6 @@
 
 #include "core/CoreExport.h"
 #include "core/InspectorBackendDispatcher.h"
-#include "core/inspector/InstrumentingAgents.h"
 #include "platform/heap/Handle.h"
 #include "wtf/Forward.h"
 #include "wtf/Vector.h"
@@ -44,7 +43,6 @@ namespace blink {
 class InspectorFrontend;
 class InspectorCompositeState;
 class InspectorState;
-class InstrumentingAgents;
 class LocalFrame;
 
 class CORE_EXPORT InspectorAgent : public NoBaseWillBeGarbageCollectedFinalized<InspectorAgent> {
@@ -64,10 +62,9 @@ public:
     virtual void flushPendingProtocolNotifications() { }
 
     String name() const { return m_name; }
-    void appended(InstrumentingAgents*, InspectorState*);
+    void appended(InspectorState*);
 
 protected:
-    RawPtrWillBeMember<InstrumentingAgents> m_instrumentingAgents;
     RawPtrWillBeMember<InspectorState> m_state;
 
 private:
@@ -78,7 +75,7 @@ class CORE_EXPORT InspectorAgentRegistry final {
     DISALLOW_ALLOCATION();
     WTF_MAKE_NONCOPYABLE(InspectorAgentRegistry);
 public:
-    InspectorAgentRegistry(InstrumentingAgents*, InspectorCompositeState*);
+    explicit InspectorAgentRegistry(InspectorCompositeState*);
     void append(PassOwnPtrWillBeRawPtr<InspectorAgent>);
 
     void setFrontend(InspectorFrontend*);
@@ -92,7 +89,6 @@ public:
     DECLARE_TRACE();
 
 private:
-    RawPtrWillBeMember<InstrumentingAgents> m_instrumentingAgents;
     RawPtrWillBeMember<InspectorCompositeState> m_inspectorState;
     WillBeHeapVector<OwnPtrWillBeMember<InspectorAgent> > m_agents;
 };
