@@ -18,8 +18,9 @@
             'dependencies': [
                 '../config.gyp:config',
                 '../platform/blink_platform.gyp:blink_platform',
-                '../core/core.gyp:webcore',
+                '../core/core.gyp:webcore', # Replace with custom list of files.
                 '../core/core.gyp:webcore_generated',
+                '../wtf/wtf.gyp:wtf',
             ],
             'sources': [
                 'V8InspectorMain.cpp',
@@ -27,10 +28,10 @@
                 'V8Inspector.h',
             ],
             'include_dirs': [
-                '../',
+                '..',  # WebKit/Source
+                '<(SHARED_INTERMEDIATE_DIR)/blink',  # gen/blink
             ],
             'defines': [
-                'BLINK_IMPLEMENTATION=1',
                 'INSIDE_BLINK',
             ],
         },
