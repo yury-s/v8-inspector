@@ -172,9 +172,6 @@
         'inspector_protocol_sources',
         'inspector_instrumentation_sources',
         '../bindings/core/v8/generated.gyp:bindings_core_v8_generated',
-        # FIXME: don't depend on bindings_modules http://crbug.com/358074
-        '../bindings/modules/generated.gyp:modules_event_generated',
-        '../bindings/modules/v8/generated.gyp:bindings_modules_v8_generated',
         '../platform/platform_generated.gyp:make_platform_generated',
         '../wtf/wtf.gyp:wtf',
         '<(DEPTH)/gin/gin.gyp:gin',
@@ -238,8 +235,6 @@
         'inspector_instrumentation_sources',
         'core_generated.gyp:make_core_generated',
         '../bindings/core/v8/generated.gyp:bindings_core_v8_generated',
-        # FIXME: don't depend on bindings_modules http://crbug.com/358074
-        '../bindings/modules/v8/generated.gyp:bindings_modules_v8_generated',
         '../wtf/wtf.gyp:wtf',
         '../config.gyp:config',
         '../platform/blink_platform.gyp:blink_platform',
@@ -696,9 +691,6 @@
         'inspector_protocol_sources',
         'inspector_instrumentation_sources',
         '../bindings/core/v8/generated.gyp:bindings_core_v8_generated',
-        # FIXME: don't depend on bindings_modules http://crbug.com/358074
-        '../bindings/modules/generated.gyp:modules_event_generated',
-        '../bindings/modules/v8/generated.gyp:bindings_modules_v8_generated',
         '../platform/platform_generated.gyp:make_platform_generated',
 
         '../wtf/wtf.gyp:wtf',
