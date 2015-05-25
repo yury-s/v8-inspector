@@ -3904,6 +3904,9 @@
             'workers/WorkerThreadTest.cpp',
             'xml/parser/SharedBufferReaderTest.cpp',
         ],
+
+
+
         'v8inspector_files': [
             'Init.cpp',
             'Init.h',
@@ -3912,8 +3915,6 @@
             'inspector/AsyncOperationMap.h',
             'inspector/ContentSearchUtils.cpp',
             'inspector/ContentSearchUtils.h',
-            'inspector/IdentifiersFactory.cpp',
-            'inspector/IdentifiersFactory.h',
             'inspector/InjectedScript.cpp',
             'inspector/InjectedScript.h',
             'inspector/InjectedScriptNative.cpp',
@@ -3925,12 +3926,9 @@
             'inspector/InjectedScriptManager.cpp',
             'inspector/InjectedScriptManager.h',
             'inspector/InspectorBaseAgent.cpp',
-            'inspector/InspectorCounters.cpp',
-            'inspector/InspectorCounters.h',
             'inspector/InspectorDebuggerAgent.cpp',
             'inspector/InspectorDebuggerAgent.h',
             'inspector/InspectorFrontendChannel.h',
-            'inspector/InspectorIdentifiers.h',
             'inspector/InspectorRuntimeAgent.cpp',
             'inspector/InspectorRuntimeAgent.h',
             'inspector/InspectorState.cpp',
@@ -3954,8 +3952,6 @@
             'inspector/ScriptDebuggerBase.h',
             'inspector/ScriptDebugListener.cpp',
             'inspector/ScriptDebugListener.h',
-            'inspector/ScriptProfile.cpp',
-            'inspector/ScriptProfile.h',
             'inspector/V8AsyncCallTracker.cpp',
             'inspector/V8AsyncCallTracker.h',
             'inspector/WorkerDebuggerAgent.cpp',
