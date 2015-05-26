@@ -904,6 +904,10 @@
       ],
       'sources': [
         '<@(v8inspector_files)',
+        '../bindings/core/v8/V8Debugger.cpp',
+        '../bindings/core/v8/V8Debugger.h',
+        '../bindings/core/v8/V8WorkerThreadDebugger.cpp',
+        '../bindings/core/v8/V8WorkerThreadDebugger.h',
       ],
     },
   ],  # targets

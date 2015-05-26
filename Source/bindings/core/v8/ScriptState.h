@@ -15,10 +15,8 @@
 
 namespace blink {
 
-class LocalDOMWindow;
 class DOMWrapperWorld;
 class ExecutionContext;
-class LocalFrame;
 class ScriptValue;
 
 // ScriptState is created when v8::Context is created.
@@ -78,11 +76,8 @@ public:
         return scriptState;
     }
 
-    static ScriptState* forMainWorld(LocalFrame*);
-
     v8::Isolate* isolate() const { return m_isolate; }
     DOMWrapperWorld& world() const { return *m_world; }
-    LocalDOMWindow* domWindow() const;
     virtual ExecutionContext* executionContext() const;
     virtual void setExecutionContext(ExecutionContext*);
 
