@@ -36,7 +36,6 @@
 
 namespace blink {
 
-class WorkerGlobalScope;
 class WorkerDebuggerAgent;
 
 class WorkerDebuggerAgent final : public InspectorDebuggerAgent {
@@ -44,15 +43,14 @@ class WorkerDebuggerAgent final : public InspectorDebuggerAgent {
     WTF_MAKE_FAST_ALLOCATED_WILL_BE_REMOVED(WorkerDebuggerAgent);
     WILL_BE_USING_GARBAGE_COLLECTED_MIXIN(WorkerDebuggerAgent);
 public:
-    static PassOwnPtrWillBeRawPtr<WorkerDebuggerAgent> create(WorkerThreadDebugger*, WorkerGlobalScope*, InjectedScriptManager*);
+    static PassOwnPtrWillBeRawPtr<WorkerDebuggerAgent> create(WorkerThreadDebugger*, InjectedScriptManager*, ScriptState*);
     ~WorkerDebuggerAgent() override;
-    DECLARE_VIRTUAL_TRACE();
 
     void interruptAndDispatchInspectorCommands();
 
 private:
 
-    WorkerDebuggerAgent(WorkerThreadDebugger*, WorkerGlobalScope*, InjectedScriptManager*);
+    WorkerDebuggerAgent(WorkerThreadDebugger*, InjectedScriptManager*, ScriptState*);
 
     void startListeningV8Debugger() override;
     void stopListeningV8Debugger() override;
@@ -62,7 +60,7 @@ private:
     void unmuteConsole() override;
 
     WorkerThreadDebugger* m_workerThreadDebugger;
-    RawPtrWillBeMember<WorkerGlobalScope> m_inspectedWorkerGlobalScope;
+    ScriptState* m_scriptState;
 };
 
 } // namespace blink
