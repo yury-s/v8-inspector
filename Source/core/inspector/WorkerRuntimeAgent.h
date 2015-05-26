@@ -36,26 +36,23 @@
 
 namespace blink {
 
-class WorkerGlobalScope;
-
 class WorkerRuntimeAgent final : public InspectorRuntimeAgent {
 public:
-    static PassOwnPtrWillBeRawPtr<WorkerRuntimeAgent> create(InjectedScriptManager* injectedScriptManager, V8Debugger* debugger, WorkerGlobalScope* context, InspectorRuntimeAgent::Client* client)
+    static PassOwnPtrWillBeRawPtr<WorkerRuntimeAgent> create(InjectedScriptManager* injectedScriptManager, V8Debugger* debugger, ScriptState* state, InspectorRuntimeAgent::Client* client)
     {
-        return adoptPtrWillBeNoop(new WorkerRuntimeAgent(injectedScriptManager, debugger, context, client));
+        return adoptPtrWillBeNoop(new WorkerRuntimeAgent(injectedScriptManager, debugger, state, client));
     }
     virtual ~WorkerRuntimeAgent();
-    DECLARE_VIRTUAL_TRACE();
 
     // Protocol commands.
     void enable(ErrorString*) override;
 
 private:
-    WorkerRuntimeAgent(InjectedScriptManager*, V8Debugger*, WorkerGlobalScope*, InspectorRuntimeAgent::Client*);
+    WorkerRuntimeAgent(InjectedScriptManager*, V8Debugger*, ScriptState*, InspectorRuntimeAgent::Client*);
     InjectedScript injectedScriptForEval(ErrorString*, const int* executionContextId) override;
     void muteConsole() override;
     void unmuteConsole() override;
-    RawPtrWillBeMember<WorkerGlobalScope> m_workerGlobalScope;
+    ScriptState* m_scriptState;
 };
 
 } // namespace blink

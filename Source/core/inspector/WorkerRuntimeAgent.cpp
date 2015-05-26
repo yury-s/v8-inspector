@@ -34,24 +34,17 @@
 
 #include "bindings/core/v8/ScriptState.h"
 #include "core/inspector/InjectedScript.h"
-#include "core/workers/WorkerGlobalScope.h"
 
 namespace blink {
 
-WorkerRuntimeAgent::WorkerRuntimeAgent(InjectedScriptManager* injectedScriptManager, V8Debugger* debugger, WorkerGlobalScope* workerGlobalScope, InspectorRuntimeAgent::Client* client)
+WorkerRuntimeAgent::WorkerRuntimeAgent(InjectedScriptManager* injectedScriptManager, V8Debugger* debugger, ScriptState* state, InspectorRuntimeAgent::Client* client)
     : InspectorRuntimeAgent(injectedScriptManager, debugger, client)
-    , m_workerGlobalScope(workerGlobalScope)
+    , m_scriptState(state)
 {
 }
 
 WorkerRuntimeAgent::~WorkerRuntimeAgent()
 {
-}
-
-DEFINE_TRACE(WorkerRuntimeAgent)
-{
-    visitor->trace(m_workerGlobalScope);
-    InspectorRuntimeAgent::trace(visitor);
 }
 
 void WorkerRuntimeAgent::enable(ErrorString* errorString)
@@ -60,13 +53,14 @@ void WorkerRuntimeAgent::enable(ErrorString* errorString)
         return;
 
     InspectorRuntimeAgent::enable(errorString);
-    addExecutionContextToFrontend(m_workerGlobalScope->script()->scriptState(), true, m_workerGlobalScope->url(), "");
+    String contextUrl = "WorkerRuntimeAgent::enable context name\n";
+    addExecutionContextToFrontend(m_scriptState, true, contextUrl, "");
 }
 
 InjectedScript WorkerRuntimeAgent::injectedScriptForEval(ErrorString* error, const int* executionContextId)
 {
     if (!executionContextId)
-        return injectedScriptManager()->injectedScriptFor(m_workerGlobalScope->script()->scriptState());
+        return injectedScriptManager()->injectedScriptFor(m_scriptState);
 
     InjectedScript injectedScript = injectedScriptManager()->injectedScriptForId(*executionContextId);
     if (injectedScript.isEmpty())
