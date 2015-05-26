@@ -38,7 +38,6 @@
 #include "bindings/core/v8/V8Debugger.h"
 #include "bindings/core/v8/V8RecursionScope.h"
 #include "bindings/core/v8/V8ScriptRunner.h"
-#include "core/dom/Microtask.h"
 #include "core/inspector/AsyncCallChain.h"
 #include "core/inspector/ContentSearchUtils.h"
 #include "core/inspector/InjectedScript.h"
@@ -1118,7 +1117,8 @@ void InspectorDebuggerAgent::traceAsyncCallbackStarting(int operationId)
     // FIXME: extract recursion check into a delegate.
     v8::Isolate* isolate = debugger().isolate();
     int recursionLevel = V8RecursionScope::recursionLevel(isolate);
-    if (chain && (!recursionLevel || (recursionLevel == 1 && Microtask::performingCheckpoint(isolate)))) {
+    bool topLevelMicrotaskCheckpoint = false; // TODO: (recursionLevel == 1 && Microtask::performingCheckpoint(isolate))
+    if (chain && (!recursionLevel || topLevelMicrotaskCheckpoint)) {
         // There can be still an old m_currentAsyncCallChain set if we start running Microtasks
         // right after executing a JS callback but before the corresponding traceAsyncCallbackCompleted().
         // In this case just call traceAsyncCallbackCompleted() now, and the subsequent ones will be ignored.
@@ -1128,7 +1128,7 @@ void InspectorDebuggerAgent::traceAsyncCallbackStarting(int operationId)
         // instrumentation with unknownAsyncOperationId bumping up the nested levels count.
         if (m_currentAsyncCallChain) {
             ASSERT(m_nestedAsyncCallCount >= 1);
-            ASSERT(recursionLevel == 1 && Microtask::performingCheckpoint(isolate));
+            ASSERT(topLevelMicrotaskCheckpoint);
             m_nestedAsyncCallCount = 1;
             traceAsyncCallbackCompleted();
         }
