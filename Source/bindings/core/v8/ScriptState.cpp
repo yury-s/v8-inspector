@@ -31,7 +31,7 @@ static void weakCallback(const v8::WeakCallbackInfo<ScriptState>& data)
 }
 
 
-ScriptState::v8ContextPerContextDataIndex = 2;
+int ScriptState::v8ContextPerContextDataIndex = 2;
 
 ScriptState::ScriptState(v8::Local<v8::Context> context, PassRefPtr<DOMWrapperWorld> world)
     : m_isolate(context->GetIsolate())

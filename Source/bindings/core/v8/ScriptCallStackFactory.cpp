@@ -33,7 +33,6 @@
 
 #include "bindings/core/v8/ScriptValue.h"
 #include "bindings/core/v8/V8Binding.h"
-#include "core/inspector/InspectorInstrumentation.h"
 #include "core/inspector/ScriptArguments.h"
 #include "core/inspector/ScriptCallFrame.h"
 #include "core/inspector/ScriptCallStack.h"
@@ -91,10 +90,8 @@ static PassRefPtrWillBeRawPtr<ScriptCallStack> createScriptCallStack(v8::Isolate
     v8::HandleScope scope(isolate);
     Vector<ScriptCallFrame> scriptCallFrames;
     toScriptCallFramesVector(stackTrace, scriptCallFrames, maxStackSize, emptyStackIsAllowed, isolate);
-    RefPtrWillBeRawPtr<ScriptCallStack> callStack = ScriptCallStack::create(scriptCallFrames);
-    if (InspectorInstrumentation::hasFrontends() && maxStackSize > 1)
-        InspectorInstrumentation::appendAsyncCallStack(currentExecutionContext(isolate), callStack.get());
-    return callStack.release();
+    // TODO: link to async call stack
+    return ScriptCallStack::create(scriptCallFrames);
 }
 
 PassRefPtrWillBeRawPtr<ScriptCallStack> createScriptCallStack(v8::Isolate* isolate, v8::Local<v8::StackTrace> stackTrace, size_t maxStackSize)
@@ -114,15 +111,7 @@ PassRefPtrWillBeRawPtr<ScriptCallStack> createScriptCallStack(size_t maxStackSiz
 
 PassRefPtrWillBeRawPtr<ScriptCallStack> createScriptCallStackForConsole(size_t maxStackSize, bool emptyStackIsAllowed)
 {
-    size_t stackSize = 1;
-    if (InspectorInstrumentation::hasFrontends()) {
-        v8::Isolate* isolate = v8::Isolate::GetCurrent();
-        if (!isolate->InContext())
-            return nullptr;
-        if (InspectorInstrumentation::consoleAgentEnabled(currentExecutionContext(isolate)))
-            stackSize = maxStackSize;
-    }
-    return createScriptCallStack(stackSize, emptyStackIsAllowed);
+    return createScriptCallStack(maxStackSize, emptyStackIsAllowed);
 }
 
 PassRefPtrWillBeRawPtr<ScriptArguments> createScriptArguments(ScriptState* scriptState, const v8::FunctionCallbackInfo<v8::Value>& v8arguments, unsigned skipArgumentCount)
