@@ -31,7 +31,6 @@
 #include "config.h"
 #include "core/inspector/InspectorRuntimeAgent.h"
 
-#include "bindings/core/v8/DOMWrapperWorld.h"
 #include "bindings/core/v8/ScriptState.h"
 #include "bindings/core/v8/V8Debugger.h"
 #include "core/inspector/InjectedScript.h"
@@ -216,8 +215,7 @@ void InspectorRuntimeAgent::addExecutionContextToFrontend(ScriptState* scriptSta
 {
     int executionContextId = injectedScriptManager()->injectedScriptIdFor(scriptState);
     m_scriptStateToId.set(scriptState, executionContextId);
-    DOMWrapperWorld& world = scriptState->world();
-    String humanReadableName = world.isIsolatedWorld() ? world.isolatedWorldHumanReadableName() : "";
+    String humanReadableName = "";
     RefPtr<ExecutionContextDescription> description = ExecutionContextDescription::create()
         .setId(executionContextId)
         .setName(humanReadableName)
