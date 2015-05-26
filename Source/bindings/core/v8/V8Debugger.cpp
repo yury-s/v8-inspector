@@ -124,7 +124,7 @@ void V8Debugger::setContextDebugData(v8::Local<v8::Context> context, const Strin
 {
     v8::HandleScope scope(context->GetIsolate());
     v8::Context::Scope contextScope(context);
-    context->SetEmbedderData(static_cast<int>(gin::kDebugIdIndex), v8String(context->GetIsolate(), contextDebugData));
+    context->SetEmbedderData(static_cast<int>(v8::Context::kDebugIdIndex), v8String(context->GetIsolate(), contextDebugData));
 }
 
 void V8Debugger::reportCompiledScripts(const String& contextDebugDataSubstring, ScriptDebugListener* listener)

@@ -39,15 +39,13 @@
 
 namespace blink {
 
-class WorkerGlobalScope;
-
 class WorkerThreadDebugger final : public NoBaseWillBeGarbageCollectedFinalized<WorkerThreadDebugger>, public ScriptDebuggerBase {
     WTF_MAKE_NONCOPYABLE(WorkerThreadDebugger);
     WILL_BE_USING_GARBAGE_COLLECTED_MIXIN(WorkerThreadDebugger);
 public:
-    static PassOwnPtrWillBeRawPtr<WorkerThreadDebugger> create(WorkerGlobalScope* workerGlobalScope)
+    static PassOwnPtrWillBeRawPtr<WorkerThreadDebugger> create()
     {
-        return adoptPtrWillBeNoop(new WorkerThreadDebugger(workerGlobalScope));
+        return adoptPtrWillBeNoop(new WorkerThreadDebugger());
     }
 
     ~WorkerThreadDebugger() override;
@@ -56,17 +54,14 @@ public:
     void addListener(ScriptDebugListener*);
     void removeListener(ScriptDebugListener*);
 
-    DECLARE_VIRTUAL_TRACE();
-
 private:
-    explicit WorkerThreadDebugger(WorkerGlobalScope*);
+    explicit WorkerThreadDebugger();
 
     ScriptDebugListener* getDebugListenerForContext(v8::Local<v8::Context>);
     void runMessageLoopOnPause(v8::Local<v8::Context>);
     void quitMessageLoopOnPause();
 
     ScriptDebugListener* m_listener;
-    RawPtrWillBeMember<WorkerGlobalScope> m_workerGlobalScope;
 };
 
 } // namespace blink
