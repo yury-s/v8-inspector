@@ -41,8 +41,6 @@
 
 namespace blink {
 
-class Node;
-
 class InjectedScript final : public InjectedScriptBase {
 public:
     InjectedScript();
@@ -88,15 +86,12 @@ public:
     void getCollectionEntries(ErrorString*, const String& objectId, RefPtr<TypeBuilder::Array<TypeBuilder::Debugger::CollectionEntry> >* result);
     void getProperties(ErrorString*, const String& objectId, bool ownProperties, bool accessorPropertiesOnly, bool generatePreview, RefPtr<TypeBuilder::Array<TypeBuilder::Runtime::PropertyDescriptor>>* result, RefPtr<TypeBuilder::Debugger::ExceptionDetails>*);
     void getInternalProperties(ErrorString*, const String& objectId, RefPtr<TypeBuilder::Array<TypeBuilder::Runtime::InternalPropertyDescriptor>>* result, RefPtr<TypeBuilder::Debugger::ExceptionDetails>*);
-    Node* nodeForObjectId(const String& objectId);
-    EventTarget* eventTargetForObjectId(const String& objectId);
     void releaseObject(const String& objectId);
 
     PassRefPtr<TypeBuilder::Array<TypeBuilder::Debugger::CallFrame> > wrapCallFrames(const ScriptValue&, int asyncOrdinal);
 
     PassRefPtr<TypeBuilder::Runtime::RemoteObject> wrapObject(const ScriptValue&, const String& groupName, bool generatePreview = false) const;
     PassRefPtr<TypeBuilder::Runtime::RemoteObject> wrapTable(const ScriptValue& table, const ScriptValue& columns) const;
-    PassRefPtr<TypeBuilder::Runtime::RemoteObject> wrapNode(Node*, const String& groupName);
     ScriptValue findObjectById(const String& objectId) const;
 
     String objectIdToObjectGroupName(const String& objectId) const;
@@ -107,8 +102,6 @@ public:
 private:
     friend InjectedScript InjectedScriptManager::injectedScriptFor(ScriptState*);
     InjectedScript(ScriptValue, InspectedStateAccessCheck, PassRefPtr<InjectedScriptNative>);
-
-    ScriptValue nodeAsScriptValue(Node*);
 
     RefPtr<InjectedScriptNative> m_native;
 };

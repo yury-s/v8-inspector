@@ -6,8 +6,8 @@
 #define ScriptState_h
 
 #include "bindings/core/v8/ScopedPersistent.h"
-#include "bindings/core/v8/V8PerContextData.h"
 #include "core/CoreExport.h"
+#include "platform/heap/Handle.h"
 #include "wtf/RefCounted.h"
 #include "wtf/Vector.h"
 #include <v8-debug.h>
@@ -88,14 +88,13 @@ public:
 
     // This can return an empty handle if the v8::Context is gone.
     v8::Local<v8::Context> context() const { return m_context.newLocal(m_isolate); }
-    bool contextIsValid() const { return !m_context.isEmpty() && m_perContextData; }
+    bool contextIsValid() const { return !m_context.isEmpty(); }
     void detachGlobalObject();
     void clearContext() { return m_context.clear(); }
 #if ENABLE(ASSERT)
     bool isGlobalObjectDetached() const { return m_globalObjectDetached; }
 #endif
 
-    V8PerContextData* perContextData() const { return m_perContextData.get(); }
     void disposePerContextData();
 
     class Observer {
@@ -114,18 +113,13 @@ protected:
     ScriptState(v8::Local<v8::Context>, PassRefPtr<DOMWrapperWorld>);
 
 private:
+    static int v8ContextPerContextDataIndex;
     v8::Isolate* m_isolate;
     // This persistent handle is weak.
     ScopedPersistent<v8::Context> m_context;
 
     // This RefPtr doesn't cause a cycle because all persistent handles that DOMWrapperWorld holds are weak.
     RefPtr<DOMWrapperWorld> m_world;
-
-    // This OwnPtr causes a cycle:
-    // V8PerContextData --(Persistent)--> v8::Context --(RefPtr)--> ScriptState --(OwnPtr)--> V8PerContextData
-    // So you must explicitly clear the OwnPtr by calling disposePerContextData()
-    // once you no longer need V8PerContextData. Otherwise, the v8::Context will leak.
-    OwnPtr<V8PerContextData> m_perContextData;
 
 #if ENABLE(ASSERT)
     bool m_globalObjectDetached;

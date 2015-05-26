@@ -250,28 +250,6 @@ void InjectedScript::getInternalProperties(ErrorString* errorString, const Strin
         *properties = array;
 }
 
-Node* InjectedScript::nodeForObjectId(const String& objectId)
-{
-    if (isEmpty() || !canAccessInspectedWindow())
-        return nullptr;
-
-    ScriptFunctionCall function(injectedScriptObject(), "nodeForObjectId");
-    function.appendArgument(objectId);
-
-    bool hadException = false;
-    ScriptValue resultValue = callFunctionWithEvalEnabled(function, hadException);
-    ASSERT(!hadException);
-
-    return InjectedScriptHost::scriptValueAsNode(scriptState(), resultValue);
-}
-
-EventTarget* InjectedScript::eventTargetForObjectId(const String& objectId)
-{
-    if (isEmpty() || !canAccessInspectedWindow())
-        return nullptr;
-    return InjectedScriptHost::scriptValueAsEventTarget(scriptState(), findObjectById(objectId));
-}
-
 void InjectedScript::releaseObject(const String& objectId)
 {
     RefPtr<JSONValue> parsedObjectId = parseJSON(objectId);
@@ -335,11 +313,6 @@ PassRefPtr<TypeBuilder::Runtime::RemoteObject> InjectedScript::wrapTable(const S
     return TypeBuilder::Runtime::RemoteObject::runtimeCast(rawResult);
 }
 
-PassRefPtr<TypeBuilder::Runtime::RemoteObject> InjectedScript::wrapNode(Node* node, const String& groupName)
-{
-    return wrapObject(nodeAsScriptValue(node), groupName);
-}
-
 ScriptValue InjectedScript::findObjectById(const String& objectId) const
 {
     ASSERT(!isEmpty());
@@ -376,11 +349,6 @@ void InjectedScript::releaseObjectGroup(const String& objectGroup)
         callFunctionWithEvalEnabled(releaseFunction, hadException);
         ASSERT(!hadException);
     }
-}
-
-ScriptValue InjectedScript::nodeAsScriptValue(Node* node)
-{
-    return InjectedScriptHost::nodeAsScriptValue(scriptState(), node);
 }
 
 void InjectedScript::setCustomObjectFormatterEnabled(bool enabled)

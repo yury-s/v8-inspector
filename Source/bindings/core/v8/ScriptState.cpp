@@ -32,23 +32,25 @@ static void weakCallback(const v8::WeakCallbackInfo<ScriptState>& data)
     data.SetSecondPassCallback(derefCallback);
 }
 
+
+ScriptState::v8ContextPerContextDataIndex = 2;
+
 ScriptState::ScriptState(v8::Local<v8::Context> context, PassRefPtr<DOMWrapperWorld> world)
     : m_isolate(context->GetIsolate())
     , m_context(m_isolate, context)
     , m_world(world)
-    , m_perContextData(V8PerContextData::create(context))
 #if ENABLE(ASSERT)
     , m_globalObjectDetached(false)
 #endif
 {
     ASSERT(m_world);
     m_context.setWeak(this, &weakCallback);
+
     context->SetAlignedPointerInEmbedderData(v8ContextPerContextDataIndex, this);
 }
 
 ScriptState::~ScriptState()
 {
-    ASSERT(!m_perContextData);
     ASSERT(m_context.isEmpty());
 }
 
@@ -66,7 +68,6 @@ void ScriptState::disposePerContextData()
     Vector<Observer*> observers(m_observers);
     for (auto& observer : observers)
         observer->willDisposeScriptState(this);
-    m_perContextData = nullptr;
 }
 
 void ScriptState::addObserver(Observer* observer)

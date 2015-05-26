@@ -72,10 +72,6 @@ public:
         m_client = injectedScriptHostClient;
     }
 
-    static Node* scriptValueAsNode(ScriptState*, ScriptValue);
-    static ScriptValue nodeAsScriptValue(ScriptState*, Node*);
-    static EventTarget* scriptValueAsEventTarget(ScriptState*, ScriptValue);
-
     void disconnect();
 
     class InspectableObject {
