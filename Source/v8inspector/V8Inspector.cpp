@@ -73,7 +73,7 @@ V8Inspector::V8Inspector()
     m_workerDebuggerAgent = workerDebuggerAgent.get();
     m_agents.append(workerDebuggerAgent.release());
 
-    m_injectedScriptManager->injectedScriptHost()->init(nullptr, m_workerDebuggerAgent, nullptr, m_workerThreadDebugger->debugger(), adoptPtr(new InjectedScriptHostClientImpl()));
+    m_injectedScriptManager->injectedScriptHost()->init(m_workerDebuggerAgent, nullptr, m_workerThreadDebugger->debugger(), adoptPtr(new InjectedScriptHostClientImpl()));
 }
 
 V8Inspector::~V8Inspector()

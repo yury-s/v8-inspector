@@ -34,8 +34,6 @@
 #include "bindings/core/v8/ScriptValue.h"
 #include "core/CoreExport.h"
 #include "core/InspectorFrontend.h"
-#include "core/frame/ConsoleTypes.h"
-#include "core/inspector/ConsoleAPITypes.h"
 #include "core/inspector/InspectorBaseAgent.h"
 #include "core/inspector/PromiseTracker.h"
 #include "core/inspector/ScriptBreakpoint.h"
@@ -52,7 +50,6 @@ namespace blink {
 
 class AsyncCallChain;
 class AsyncCallStack;
-class ConsoleMessage;
 class DevToolsFunctionInfo;
 class InjectedScript;
 class InjectedScriptManager;
@@ -92,7 +89,6 @@ public:
     void disable(ErrorString*) override final;
 
     bool isPaused();
-    void addMessageToConsole(ConsoleMessage*);
 
     // Part of the protocol.
     void enable(ErrorString*) override;
@@ -220,7 +216,6 @@ private:
 
     void schedulePauseOnNextStatementIfSteppingInto();
     void cancelPauseOnNextStatement();
-    void addMessageToConsole(MessageSource, MessageType);
 
     PassRefPtr<TypeBuilder::Array<TypeBuilder::Debugger::CallFrame> > currentCallFrames();
     PassRefPtr<TypeBuilder::Debugger::StackTrace> currentAsyncStackTrace();

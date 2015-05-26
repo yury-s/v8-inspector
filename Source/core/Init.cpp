@@ -31,102 +31,30 @@
 #include "config.h"
 #include "Init.h"
 
-#include "bindings/core/v8/ScriptStreamerThread.h"
-#include "core/EventNames.h"
-#include "core/EventTargetNames.h"
-#include "core/EventTypeNames.h"
-#include "core/HTMLNames.h"
-#include "core/HTMLTokenizerNames.h"
-#include "core/InputTypeNames.h"
-#include "core/MathMLNames.h"
-#include "core/MediaFeatureNames.h"
-#include "core/MediaTypeNames.h"
-#include "core/SVGNames.h"
-#include "core/XLinkNames.h"
-#include "core/XMLNSNames.h"
-#include "core/XMLNames.h"
-#include "core/css/parser/CSSParserTokenRange.h"
-#include "core/dom/Document.h"
-#include "core/dom/StyleChangeReason.h"
-#include "core/events/EventFactory.h"
-#include "core/fetch/FetchInitiatorTypeNames.h"
-#include "core/html/parser/HTMLParserThread.h"
-#include "core/workers/WorkerThread.h"
-#include "platform/EventTracer.h"
-#include "platform/FontFamilyNames.h"
 #include "platform/PlatformThreadData.h"
-#include "platform/weborigin/KURL.h"
-#include "platform/weborigin/SecurityPolicy.h"
-#include "wtf/Partitions.h"
 #include "wtf/text/StringStatics.h"
+#include "wtf/text/StringImpl.h"
 
 namespace blink {
-
-void CoreInitializer::registerEventFactory()
-{
-    static bool isRegistered = false;
-    if (isRegistered)
-        return;
-    isRegistered = true;
-
-    Document::registerEventFactory(EventFactory::create());
-}
 
 void CoreInitializer::init()
 {
     ASSERT(!m_isInited);
     m_isInited = true;
 
-    HTMLNames::init();
-    SVGNames::init();
-    XLinkNames::init();
-    MathMLNames::init();
-    XMLNSNames::init();
-    XMLNames::init();
-
-    EventNames::init();
-    EventTargetNames::init();
-    EventTypeNames::init();
-    FetchInitiatorTypeNames::init();
-    FontFamilyNames::init();
-    HTMLTokenizerNames::init();
-    InputTypeNames::init();
-    MediaFeatureNames::init();
-    MediaTypeNames::init();
-
-    CSSPrimitiveValue::initUnitTable();
-    CSSParserTokenRange::initStaticEOFToken();
-
     // It would make logical sense to do this in WTF::initialize() but there are
     // ordering dependencies, e.g. about "xmlns".
     WTF::StringStatics::init();
-
-    StyleChangeExtraData::init();
-
-    QualifiedName::init();
-    EventTracer::initialize();
-    KURL::initialize();
-    SecurityPolicy::init();
-
-    registerEventFactory();
 
     // Ensure that the main thread's thread-local data is initialized before
     // starting any worker threads.
     PlatformThreadData::current();
 
     StringImpl::freezeStaticStrings();
-
-    // Creates HTMLParserThread::shared and ScriptStreamerThread::shared, but
-    // does not start the threads.
-    HTMLParserThread::init();
-    ScriptStreamerThread::init();
 }
 
 void CoreInitializer::shutdown()
 {
-    // Make sure we stop the HTMLParserThread before Platform::current() is
-    // cleared.
-    HTMLParserThread::shutdown();
 }
 
 } // namespace blink

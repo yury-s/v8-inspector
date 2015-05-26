@@ -35,8 +35,6 @@
 
 #include "bindings/core/v8/ScriptFunctionCall.h"
 #include "bindings/core/v8/V8Binding.h"
-#include "core/inspector/InspectorInstrumentation.h"
-#include "core/inspector/InspectorTraceEvents.h"
 #include "platform/JSONValues.h"
 #include "wtf/text/WTFString.h"
 
@@ -141,12 +139,9 @@ const ScriptValue& InjectedScriptBase::injectedScriptObject() const
 ScriptValue InjectedScriptBase::callFunctionWithEvalEnabled(ScriptFunctionCall& function, bool& hadException) const
 {
     ASSERT(!isEmpty());
-    ExecutionContext* executionContext = m_injectedScriptObject.scriptState()->executionContext();
     ScriptState::Scope scope(m_injectedScriptObject.scriptState());
     v8::Local<v8::Function> functionObj = function.function();
     DevToolsFunctionInfo info(functionObj);
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "FunctionCall", "data", InspectorFunctionCallEvent::data(executionContext, info.scriptId(), "InjectedScriptSource.js", info.lineNumber()));
-    InspectorInstrumentationCookie cookie = InspectorInstrumentation::willCallFunction(executionContext, info);
 
     ScriptState* scriptState = m_injectedScriptObject.scriptState();
     bool evalIsDisabled = false;
@@ -162,8 +157,6 @@ ScriptValue InjectedScriptBase::callFunctionWithEvalEnabled(ScriptFunctionCall& 
     if (evalIsDisabled)
         scriptState->setEvalEnabled(false);
 
-    InspectorInstrumentation::didCallFunction(cookie);
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters", TRACE_EVENT_SCOPE_THREAD, "data", InspectorUpdateCountersEvent::data());
     return resultValue;
 }
 

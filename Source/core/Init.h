@@ -48,7 +48,6 @@ protected:
     bool isInitialized() const { return m_isInited; }
 
 private:
-    void registerEventFactory();
 
     bool m_isInited;
 };

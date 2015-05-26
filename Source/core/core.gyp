@@ -894,7 +894,7 @@
       'dependencies': [
         'webcore_prerequisites',
         # Exported.
-        'webcore_generated',
+        # 'webcore_generated',
         '../platform/blink_platform.gyp:blink_platform',
         '../wtf/wtf.gyp:wtf',
         '<(DEPTH)/url/url.gyp:url_lib',

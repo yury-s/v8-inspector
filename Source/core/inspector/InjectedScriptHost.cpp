@@ -32,11 +32,7 @@
 #include "core/inspector/InjectedScriptHost.h"
 
 #include "bindings/core/v8/V8Debugger.h"
-#include "core/inspector/EventListenerInfo.h"
-#include "core/inspector/InspectorConsoleAgent.h"
-#include "core/inspector/InspectorDOMAgent.h"
 #include "core/inspector/InspectorDebuggerAgent.h"
-#include "core/inspector/InspectorInspectorAgent.h"
 #include "platform/JSONValues.h"
 
 #include "wtf/RefPtr.h"
@@ -50,8 +46,7 @@ PassRefPtrWillBeRawPtr<InjectedScriptHost> InjectedScriptHost::create()
 }
 
 InjectedScriptHost::InjectedScriptHost()
-    : m_consoleAgent(nullptr)
-    , m_debuggerAgent(nullptr)
+    : m_debuggerAgent(nullptr)
     , m_inspectCallback(nullptr)
     , m_debugger(nullptr)
 {
@@ -64,14 +59,12 @@ InjectedScriptHost::~InjectedScriptHost()
 
 DEFINE_TRACE(InjectedScriptHost)
 {
-    visitor->trace(m_consoleAgent);
     visitor->trace(m_debuggerAgent);
     visitor->trace(m_debugger);
 }
 
 void InjectedScriptHost::disconnect()
 {
-    m_consoleAgent = nullptr;
     m_debuggerAgent = nullptr;
     m_inspectCallback = nullptr;
     m_debugger = nullptr;
@@ -87,15 +80,10 @@ void InjectedScriptHost::inspectImpl(PassRefPtr<JSONValue> object, PassRefPtr<JS
 
 void InjectedScriptHost::getEventListenersImpl(EventTarget* target, Vector<EventListenerInfo>& listenersArray)
 {
-    EventListenerInfo::getEventListeners(target, listenersArray, false);
 }
 
 void InjectedScriptHost::clearConsoleMessages()
 {
-    if (m_consoleAgent) {
-        ErrorString error;
-        m_consoleAgent->clearMessages(&error);
-    }
 }
 
 ScriptValue InjectedScriptHost::InspectableObject::get(ScriptState*)
