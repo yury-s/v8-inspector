@@ -895,15 +895,13 @@
         'webcore_prerequisites',
         # Exported.
         # 'webcore_generated',
-        '../platform/blink_platform.gyp:blink_platform',
+        #'../platform/blink_platform.gyp:blink_platform',
         '../wtf/wtf.gyp:wtf',
         '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
       ],
-      'direct_dependent_settings': {
-        'include_dirs': [
-          '<@(webcore_include_dirs)',
-        ],
-      },
+      'include_dirs': [
+        '<@(webcore_include_dirs)',
+      ],
       'sources': [
         '<@(v8inspector_files)',
       ],
