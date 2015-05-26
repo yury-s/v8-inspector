@@ -33,27 +33,11 @@
 
 #include "bindings/core/v8/ExceptionState.h"
 #include "bindings/core/v8/ScriptValue.h"
-#include "bindings/core/v8/V8AbstractEventListener.h"
 #include "bindings/core/v8/V8Binding.h"
-#include "bindings/core/v8/V8DOMException.h"
 #include "bindings/core/v8/V8Debugger.h"
-#include "bindings/core/v8/V8Element.h"
-#include "bindings/core/v8/V8Event.h"
-#include "bindings/core/v8/V8EventTarget.h"
-#include "bindings/core/v8/V8EventTarget.h"
-#include "bindings/core/v8/V8HTMLAllCollection.h"
-#include "bindings/core/v8/V8HTMLCollection.h"
-#include "bindings/core/v8/V8Location.h"
-#include "bindings/core/v8/V8Navigator.h"
-#include "bindings/core/v8/V8Node.h"
-#include "bindings/core/v8/V8NodeList.h"
 #include "bindings/core/v8/V8ScriptRunner.h"
-#include "core/events/EventTarget.h"
-#include "core/frame/LocalDOMWindow.h"
-#include "core/inspector/EventListenerInfo.h"
 #include "core/inspector/InjectedScript.h"
 #include "core/inspector/InjectedScriptHost.h"
-#include "core/inspector/InspectorDOMAgent.h"
 #include "core/inspector/JavaScriptCallFrame.h"
 #include "platform/JSONValues.h"
 
@@ -129,13 +113,7 @@ void V8InjectedScriptHost::isHTMLAllCollectionMethodCustom(const v8::FunctionCal
 {
     if (info.Length() < 1)
         return;
-
-    if (!info[0]->IsObject()) {
-        v8SetReturnValue(info, false);
-        return;
-    }
-
-    v8SetReturnValue(info, V8HTMLAllCollection::hasInstance(info[0], info.GetIsolate()));
+    v8SetReturnValue(info, false);
 }
 
 void V8InjectedScriptHost::isTypedArrayMethodCustom(const v8::FunctionCallbackInfo<v8::Value>& info)
@@ -180,18 +158,7 @@ void V8InjectedScriptHost::subtypeMethodCustom(const v8::FunctionCallbackInfo<v8
         v8SetReturnValue(info, v8AtomicString(isolate, "generator"));
         return;
     }
-    if (V8Node::hasInstance(value, isolate)) {
-        v8SetReturnValue(info, v8AtomicString(isolate, "node"));
-        return;
-    }
-    if (V8NodeList::hasInstance(value, isolate)
-        || V8DOMTokenList::hasInstance(value, isolate)
-        || V8HTMLCollection::hasInstance(value, isolate)
-        || V8HTMLAllCollection::hasInstance(value, isolate)) {
-        v8SetReturnValue(info, v8AtomicString(isolate, "array"));
-        return;
-    }
-    if (value->IsNativeError() || V8DOMException::hasInstance(value, isolate)) {
+    if (value->IsNativeError()) {
         v8SetReturnValue(info, v8AtomicString(isolate, "error"));
         return;
     }
@@ -261,38 +228,6 @@ void V8InjectedScriptHost::getInternalPropertiesMethodCustom(const v8::FunctionC
     v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(info[0]);
     v8::MaybeLocal<v8::Array> properties = v8::Debug::GetInternalProperties(info.GetIsolate(), object);
     v8SetReturnValue(info, properties);
-}
-
-static v8::Local<v8::Array> getJSListenerFunctions(v8::Isolate* isolate, ExecutionContext* executionContext, const EventListenerInfo& listenerInfo)
-{
-    v8::Local<v8::Array> result = v8::Array::New(isolate);
-    size_t handlersCount = listenerInfo.eventListenerVector.size();
-    for (size_t i = 0, outputIndex = 0; i < handlersCount; ++i) {
-        RefPtr<EventListener> listener = listenerInfo.eventListenerVector[i].listener;
-        if (listener->type() != EventListener::JSEventListenerType) {
-            ASSERT_NOT_REACHED();
-            continue;
-        }
-        V8AbstractEventListener* v8Listener = static_cast<V8AbstractEventListener*>(listener.get());
-        v8::Local<v8::Context> context = toV8Context(executionContext, v8Listener->world());
-        // Hide listeners from other contexts.
-        if (context != isolate->GetCurrentContext())
-            continue;
-        v8::Local<v8::Object> function;
-        {
-            // getListenerObject() may cause JS in the event attribute to get compiled, potentially unsuccessfully.
-            v8::TryCatch block;
-            function = v8Listener->getListenerObject(executionContext);
-            if (block.HasCaught())
-                continue;
-        }
-        ASSERT(!function.IsEmpty());
-        v8::Local<v8::Object> listenerEntry = v8::Object::New(isolate);
-        listenerEntry->Set(v8AtomicString(isolate, "listener"), function);
-        listenerEntry->Set(v8AtomicString(isolate, "useCapture"), v8::Boolean::New(isolate, listenerInfo.eventListenerVector[i].useCapture));
-        result->Set(v8::Number::New(isolate, outputIndex++), listenerEntry);
-    }
-    return result;
 }
 
 void V8InjectedScriptHost::getEventListenersMethodCustom(const v8::FunctionCallbackInfo<v8::Value>&)
