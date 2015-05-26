@@ -897,7 +897,6 @@
         # 'webcore_generated',
         '../platform/blink_platform.gyp:blink_platform',
         '../wtf/wtf.gyp:wtf',
-        '<(DEPTH)/url/url.gyp:url_lib',
         '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
       ],
       'direct_dependent_settings': {
