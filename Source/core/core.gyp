@@ -919,10 +919,17 @@
         '../bindings/core/v8/ScriptValue.h',
         '../bindings/core/v8/SharedPersistent.h',
 
+        '../bindings/core/v8/V8HiddenValue.cpp',
+        '../bindings/core/v8/V8HiddenValue.h',
+
         '../bindings/core/v8/V8Debugger.cpp',
         '../bindings/core/v8/V8Debugger.h',
         '../bindings/core/v8/WorkerThreadDebugger.cpp',
         '../bindings/core/v8/WorkerThreadDebugger.h',
+
+        '../bindings/core/v8/custom/V8InjectedScriptHostCustom.cpp',
+        '../bindings/core/v8/custom/V8InjectedScriptManager.cpp',
+        '../bindings/core/v8/custom/V8JavaScriptCallFrameCustom.cpp',
       ],
     },
   ],  # targets
