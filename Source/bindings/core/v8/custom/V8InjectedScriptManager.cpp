@@ -31,16 +31,12 @@
 #include "config.h"
 #include "core/inspector/InjectedScriptManager.h"
 
-#include "bindings/core/v8/BindingSecurity.h"
 #include "bindings/core/v8/ScopedPersistent.h"
 #include "bindings/core/v8/ScriptValue.h"
 #include "bindings/core/v8/V8Binding.h"
 #include "bindings/core/v8/V8Debugger.h"
 #include "bindings/core/v8/V8InjectedScriptHost.h"
-#include "bindings/core/v8/V8ObjectConstructor.h"
 #include "bindings/core/v8/V8ScriptRunner.h"
-#include "bindings/core/v8/V8Window.h"
-#include "core/frame/LocalDOMWindow.h"
 #include "core/inspector/InjectedScriptHost.h"
 #include "core/inspector/InjectedScriptNative.h"
 #include "wtf/RefPtr.h"
@@ -121,12 +117,8 @@ bool InjectedScriptManager::canAccessInspectedWindow(ScriptState* scriptState)
     v8::Local<v8::Object> global = scriptState->context()->Global();
     if (global.IsEmpty())
         return false;
-    v8::Local<v8::Object> holder = V8Window::findInstanceInPrototypeChain(global, scriptState->isolate());
-    if (holder.IsEmpty())
-        return false;
-    LocalFrame* frame = toLocalDOMWindow(V8Window::toImpl(holder))->frame();
-
-    return BindingSecurity::shouldAllowAccessToFrame(scriptState->isolate(), frame, DoNotReportSecurityError);
+    // TODO: real check
+    return true;
 }
 
 void InjectedScriptManager::setWeakCallback(const v8::WeakCallbackInfo<InjectedScriptManager::CallbackData>& data)
