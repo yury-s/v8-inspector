@@ -26,7 +26,6 @@
 #ifndef V8ScriptRunner_h
 #define V8ScriptRunner_h
 
-#include "wtf/PassOwnPtr.h"
 #include "wtf/text/TextPosition.h"
 #include "wtf/text/WTFString.h"
 #include <v8.h>
