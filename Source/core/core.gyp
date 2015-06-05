@@ -938,6 +938,14 @@
         '../bindings/core/v8/inspector/V8JavaScriptCallFrame.cpp',
         '../bindings/core/v8/inspector/V8JavaScriptCallFrame.h',
 
+        # generated files
+        '../core/InspectorBackendDispatcher.cpp',
+        '../core/InspectorBackendDispatcher.h',
+        '../core/InspectorFrontend.cpp',
+        '../core/InspectorFrontend.h',
+        '../core/InspectorTypeBuilder.cpp',
+        '../core/InspectorTypeBuilder.h',
+
         # to be removed
         '../bindings/core/v8/V8Binding.cpp',
         '../bindings/core/v8/V8Binding.h',
