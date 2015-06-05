@@ -30,9 +30,8 @@
 #include "bindings/core/v8/ScriptRegexp.h"
 
 #include "bindings/core/v8/V8Binding.h"
-#include "bindings/core/v8/V8PerIsolateData.h"
 #include "bindings/core/v8/V8ScriptRunner.h"
-#include "platform/ScriptForbiddenScope.h"
+#include "core/inspector/V8InspectorIsolateData.h"
 
 namespace blink {
 
@@ -40,7 +39,7 @@ ScriptRegexp::ScriptRegexp(const String& pattern, TextCaseSensitivity caseSensit
 {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     v8::HandleScope handleScope(isolate);
-    v8::Local<v8::Context> context = V8PerIsolateData::from(isolate)->ensureScriptRegexpContext();
+    v8::Local<v8::Context> context = V8InspectorIsolateData::from(isolate)->ensureScriptRegexpContext();
     v8::Context::Scope contextScope(context);
     v8::TryCatch tryCatch;
 
@@ -67,11 +66,9 @@ int ScriptRegexp::match(const String& string, int startFrom, int* matchLength) c
     if (string.length() > INT_MAX)
         return -1;
 
-    ScriptForbiddenScope::AllowUserAgentScript allowScript;
-
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     v8::HandleScope handleScope(isolate);
-    v8::Local<v8::Context> context = V8PerIsolateData::from(isolate)->ensureScriptRegexpContext();
+    v8::Local<v8::Context> context = V8InspectorIsolateData::from(isolate)->ensureScriptRegexpContext();
     v8::Context::Scope contextScope(context);
     v8::TryCatch tryCatch;
 

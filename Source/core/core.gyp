@@ -946,6 +946,10 @@
         '../core/InspectorTypeBuilder.cpp',
         '../core/InspectorTypeBuilder.h',
 
+        # newly added in the experiment
+        '../core/inspector/V8InspectorIsolateData.cpp',
+        '../core/inspector/V8InspectorIsolateData.h',
+
         # to be removed
         '../bindings/core/v8/V8Binding.cpp',
         '../bindings/core/v8/V8Binding.h',
