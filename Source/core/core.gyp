@@ -927,9 +927,13 @@
         '../bindings/core/v8/WorkerThreadDebugger.cpp',
         '../bindings/core/v8/WorkerThreadDebugger.h',
 
-        '../bindings/core/v8/custom/V8InjectedScriptHostCustom.cpp',
         '../bindings/core/v8/custom/V8InjectedScriptManager.cpp',
-        '../bindings/core/v8/custom/V8JavaScriptCallFrameCustom.cpp',
+        '../bindings/core/v8/inspector/InspectorWrapper.cpp',
+        '../bindings/core/v8/inspector/InspectorWrapper.h',
+        '../bindings/core/v8/inspector/V8InjectedScriptHost.cpp',
+        '../bindings/core/v8/inspector/V8InjectedScriptHost.h',
+        '../bindings/core/v8/inspector/V8JavaScriptCallFrame.cpp',
+        '../bindings/core/v8/inspector/V8JavaScriptCallFrame.h',
       ],
     },
   ],  # targets

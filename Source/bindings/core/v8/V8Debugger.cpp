@@ -32,14 +32,13 @@
 #include "bindings/core/v8/V8Debugger.h"
 
 #include "bindings/core/v8/ScriptValue.h"
-#include "bindings/core/v8/V8JavaScriptCallFrame.h"
+#include "bindings/core/v8/V8Binding.h"
 #include "bindings/core/v8/V8ScriptRunner.h"
+#include "bindings/core/v8/inspector/V8JavaScriptCallFrame.h"
 #include "core/inspector/JavaScriptCallFrame.h"
 #include "core/inspector/ScriptDebugListener.h"
 #include "platform/JSONValues.h"
-#include "wtf/Deque.h"
 #include "wtf/StdLibExtras.h"
-#include "wtf/ThreadingPrimitives.h"
 #include "wtf/Vector.h"
 #include "wtf/dtoa/utils.h"
 #include "wtf/text/CString.h"
@@ -103,6 +102,7 @@ void V8Debugger::enable()
     v8::HandleScope scope(m_isolate);
     v8::Debug::SetDebugEventListener(&V8Debugger::v8DebugEventCallback, v8::External::New(m_isolate, this));
     m_debuggerContext.Reset(m_isolate, v8::Debug::GetDebugContext());
+    m_callFrameWrapperTemplate.Reset(m_isolate, V8JavaScriptCallFrame::createWrapperTemplate(m_isolate));
     compileDebuggerScript();
 }
 
@@ -112,6 +112,7 @@ void V8Debugger::disable()
     clearBreakpoints();
     m_debuggerScript.Reset();
     m_debuggerContext.Reset();
+    m_callFrameWrapperTemplate.Reset();
     v8::Debug::SetDebugEventListener(nullptr);
 }
 
@@ -399,7 +400,7 @@ int V8Debugger::frameCount()
     return 0;
 }
 
-PassRefPtrWillBeRawPtr<JavaScriptCallFrame> V8Debugger::toJavaScriptCallFrameUnsafe(const ScriptValue& value)
+PassRefPtr<JavaScriptCallFrame> V8Debugger::toJavaScriptCallFrameUnsafe(const ScriptValue& value)
 {
     if (value.isEmpty())
         return nullptr;
@@ -408,10 +409,10 @@ PassRefPtrWillBeRawPtr<JavaScriptCallFrame> V8Debugger::toJavaScriptCallFrameUns
         return nullptr;
     ScriptState::Scope scope(scriptState);
     ASSERT(value.isObject());
-    return V8JavaScriptCallFrame::toImpl(v8::Local<v8::Object>::Cast(value.v8ValueUnsafe()));
+    return V8JavaScriptCallFrame::unwrap(v8::Local<v8::Object>::Cast(value.v8ValueUnsafe()));
 }
 
-PassRefPtrWillBeRawPtr<JavaScriptCallFrame> V8Debugger::wrapCallFrames(int maximumLimit, ScopeInfoDetails scopeDetails)
+PassRefPtr<JavaScriptCallFrame> V8Debugger::wrapCallFrames(int maximumLimit, ScopeInfoDetails scopeDetails)
 {
     const int scopeBits = 2;
     static_assert(NoScopes < (1 << scopeBits), "there must be enough bits to encode ScopeInfoDetails");
@@ -443,13 +444,15 @@ ScriptValue V8Debugger::currentCallFramesInner(ScopeInfoDetails scopeDetails)
     if (!stackTrace->GetFrameCount())
         return ScriptValue();
 
-    RefPtrWillBeRawPtr<JavaScriptCallFrame> currentCallFrame = wrapCallFrames(0, scopeDetails);
+    RefPtr<JavaScriptCallFrame> currentCallFrame = wrapCallFrames(0, scopeDetails);
     if (!currentCallFrame)
         return ScriptValue();
 
+    v8::Local<v8::FunctionTemplate> wrapperTemplate = v8::Local<v8::FunctionTemplate>::New(m_isolate, m_callFrameWrapperTemplate);
     ScriptState* scriptState = m_pausedScriptState ? m_pausedScriptState.get() : ScriptState::current(m_isolate);
     ScriptState::Scope scope(scriptState);
-    return ScriptValue(scriptState, toV8(currentCallFrame.release(), scriptState->context()->Global(), m_isolate));
+    v8::Local<v8::Object> wrapper = V8JavaScriptCallFrame::wrap(wrapperTemplate, scriptState->context(), currentCallFrame.release());
+    return ScriptValue(scriptState, wrapper);
 }
 
 ScriptValue V8Debugger::currentCallFrames()
@@ -462,7 +465,7 @@ ScriptValue V8Debugger::currentCallFramesForAsyncStack()
     return currentCallFramesInner(FastAsyncScopes);
 }
 
-PassRefPtrWillBeRawPtr<JavaScriptCallFrame> V8Debugger::callFrameNoScopes(int index)
+PassRefPtr<JavaScriptCallFrame> V8Debugger::callFrameNoScopes(int index)
 {
     if (!m_isolate->InContext())
         return nullptr;

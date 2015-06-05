@@ -105,10 +105,10 @@ public:
     bool setScriptSource(const String& sourceID, const String& newContent, bool preview, String* error, RefPtr<TypeBuilder::Debugger::SetScriptSourceError>&, ScriptValue* newCallFrames, RefPtr<JSONObject>* result);
     ScriptValue currentCallFrames();
     ScriptValue currentCallFramesForAsyncStack();
-    PassRefPtrWillBeRawPtr<JavaScriptCallFrame> callFrameNoScopes(int index);
+    PassRefPtr<JavaScriptCallFrame> callFrameNoScopes(int index);
     int frameCount();
 
-    static PassRefPtrWillBeRawPtr<JavaScriptCallFrame> toJavaScriptCallFrameUnsafe(const ScriptValue&);
+    static PassRefPtr<JavaScriptCallFrame> toJavaScriptCallFrameUnsafe(const ScriptValue&);
 
     class Task {
     public:
@@ -155,7 +155,7 @@ private:
         NoScopes // Should be the last option.
     };
     ScriptValue currentCallFramesInner(ScopeInfoDetails);
-    PassRefPtrWillBeRawPtr<JavaScriptCallFrame> wrapCallFrames(int maximumLimit, ScopeInfoDetails);
+    PassRefPtr<JavaScriptCallFrame> wrapCallFrames(int maximumLimit, ScopeInfoDetails);
     void handleV8AsyncTaskEvent(ScriptDebugListener*, ScriptState* pausedScriptState, v8::Local<v8::Object> executionState, v8::Local<v8::Object> eventData);
     void handleV8PromiseEvent(ScriptDebugListener*, ScriptState* pausedScriptState, v8::Local<v8::Object> executionState, v8::Local<v8::Object> eventData);
 
@@ -165,6 +165,7 @@ private:
     v8::UniquePersistent<v8::FunctionTemplate> m_breakProgramCallbackTemplate;
     v8::UniquePersistent<v8::Object> m_debuggerScript;
     v8::UniquePersistent<v8::Context> m_debuggerContext;
+    v8::UniquePersistent<v8::FunctionTemplate> m_callFrameWrapperTemplate;
     v8::Local<v8::Object> m_executionState;
     RefPtr<ScriptState> m_pausedScriptState;
     bool m_runningNestedMessageLoop;

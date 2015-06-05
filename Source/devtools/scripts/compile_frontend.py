@@ -78,10 +78,7 @@ patched_es6_externs_file = to_platform_path(path.join(devtools_frontend_path, 'e
 global_externs_file = to_platform_path(path.join(devtools_frontend_path, 'externs.js'))
 protocol_externs_file = path.join(devtools_frontend_path, 'protocol_externs.js')
 injected_script_source_name = path.join(inspector_path, 'InjectedScriptSource.js')
-injected_script_externs_idl_names = [
-    path.join(inspector_path, 'InjectedScriptHost.idl'),
-    path.join(inspector_path, 'JavaScriptCallFrame.idl'),
-]
+injected_script_externs_file = path.join(inspector_path, 'injected_script_externs.js')
 
 jsmodule_name_prefix = 'jsmodule_'
 runtime_module_name = '_runtime'
@@ -129,7 +126,7 @@ def error_excepthook(exctype, value, traceback):
     sys.__excepthook__(exctype, value, traceback)
 sys.excepthook = error_excepthook
 
-application_descriptors = ['devtools.json', 'inspector.json', 'toolbox.json']
+application_descriptors = ['inspector.json', 'toolbox.json']
 loader = modular_build.DescriptorLoader(devtools_frontend_path)
 descriptors = loader.load_applications(application_descriptors)
 modules_by_name = descriptors.modules
@@ -386,21 +383,24 @@ injectedScriptSourceTmpFile = to_platform_path(path.join(inspector_path, 'Inject
 unclosure_injected_script(injected_script_source_name, injectedScriptSourceTmpFile)
 
 print 'Compiling InjectedScriptSource.js...'
-injected_script_externs_file = tempfile.NamedTemporaryFile(mode='wt', delete=False)
-try:
-    generate_injected_script_externs.generate_injected_script_externs(injected_script_externs_idl_names, injected_script_externs_file)
-finally:
-    injected_script_externs_file.close()
-
 spawned_compiler_command = '%s -jar %s %s' % (java_exec, closure_compiler_jar, common_closure_args)
 
 command = spawned_compiler_command
-command += '    --externs ' + to_platform_path_exact(injected_script_externs_file.name)
+command += '    --externs ' + to_platform_path(injected_script_externs_file)
 command += '    --externs ' + to_platform_path(protocol_externs_file)
 command += '    --module ' + jsmodule_name_prefix + 'injected_script' + ':1'
 command += '        --js ' + to_platform_path(injectedScriptSourceTmpFile)
 
 injectedScriptCompileProc = run_in_shell(command)
+
+print 'Compiling devtools.js...'
+spawned_compiler_command = '%s -jar %s %s' % (java_exec, closure_compiler_jar, common_closure_args)
+command = spawned_compiler_command
+command += '    --externs ' + to_platform_path(global_externs_file)
+command += '    --externs ' + to_platform_path(path.join(devtools_frontend_path, 'host', 'InspectorFrontendHostAPI.js'))
+command += '    --module ' + jsmodule_name_prefix + 'devtools_js' + ':1'
+command += '        --js ' + to_platform_path(path.join(devtools_frontend_path, 'devtools.js'))
+devtoolsJSCompileProc = run_in_shell(command)
 
 print 'Verifying JSDoc comments...'
 additional_jsdoc_check_files = [injectedScriptSourceTmpFile]
@@ -482,6 +482,10 @@ if error_count:
 print 'InjectedScriptSource.js compilation output:%s' % os.linesep, injectedScriptCompileOut
 errors_found |= hasErrors(injectedScriptCompileOut)
 
+(devtoolsJSCompileOut, _) = devtoolsJSCompileProc.communicate()
+print 'devtools.js compilation output:%s' % os.linesep, devtoolsJSCompileOut
+errors_found |= hasErrors(devtoolsJSCompileOut)
+
 (validateInjectedScriptOut, _) = validateInjectedScriptProc.communicate()
 print 'Validate InjectedScriptSource.js output:%s' % os.linesep, (validateInjectedScriptOut if validateInjectedScriptOut else '<empty>')
 errors_found |= hasErrors(validateInjectedScriptOut)
@@ -491,6 +495,5 @@ if errors_found:
 
 os.remove(injectedScriptSourceTmpFile)
 os.remove(compiler_args_file.name)
-os.remove(injected_script_externs_file.name)
 os.remove(protocol_externs_file)
 shutil.rmtree(modules_dir, True)

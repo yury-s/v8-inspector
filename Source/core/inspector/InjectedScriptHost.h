@@ -39,6 +39,7 @@
 #include "wtf/RefCounted.h"
 #include "wtf/Vector.h"
 #include "wtf/text/WTFString.h"
+#include <v8.h>
 
 namespace blink {
 
@@ -55,8 +56,7 @@ struct EventListenerInfo;
 // InjectedScriptHost must never implemment methods that have more power over the page than the
 // page already has itself (e.g. origin restriction bypasses).
 
-class InjectedScriptHost : public RefCountedWillBeGarbageCollectedFinalized<InjectedScriptHost>, public ScriptWrappable {
-    DEFINE_WRAPPERTYPEINFO();
+class InjectedScriptHost : public RefCountedWillBeGarbageCollectedFinalized<InjectedScriptHost> {
 public:
     static PassRefPtrWillBeRawPtr<InjectedScriptHost> create();
     ~InjectedScriptHost();
@@ -96,6 +96,10 @@ public:
     V8Debugger& debugger() { return *m_debugger; }
     InjectedScriptHostClient* client() { return m_client.get(); }
 
+    // FIXME: store this template in per isolate data
+    void setWrapperTemplate(v8::Local<v8::FunctionTemplate> wrapperTemplate, v8::Isolate* isolate) { m_wrapperTemplate.Reset(isolate, wrapperTemplate); }
+    v8::Local<v8::FunctionTemplate> wrapperTemplate(v8::Isolate* isolate) { return v8::Local<v8::FunctionTemplate>::New(isolate, m_wrapperTemplate); }
+
 private:
     InjectedScriptHost();
 
@@ -105,6 +109,7 @@ private:
     Vector<OwnPtr<InspectableObject> > m_inspectedObjects;
     OwnPtr<InspectableObject> m_defaultInspectableObject;
     OwnPtr<InjectedScriptHostClient> m_client;
+    v8::Global<v8::FunctionTemplate> m_wrapperTemplate;
 };
 
 } // namespace blink
