@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class DOMWrapperWorld;
 class ScriptValue;
 
 // ScriptState is created when v8::Context is created.
@@ -45,7 +44,7 @@ public:
         v8::Local<v8::Context> m_context;
     };
 
-    static PassRefPtr<ScriptState> create(v8::Local<v8::Context>, PassRefPtr<DOMWrapperWorld>);
+    static PassRefPtr<ScriptState> create(v8::Local<v8::Context>);
     virtual ~ScriptState();
 
     static ScriptState* current(v8::Isolate* isolate)
@@ -76,7 +75,6 @@ public:
     }
 
     v8::Isolate* isolate() const { return m_isolate; }
-    DOMWrapperWorld& world() const { return *m_world; }
 
     // This can return an empty handle if the v8::Context is gone.
     v8::Local<v8::Context> context() const { return m_context.newLocal(m_isolate); }
@@ -102,16 +100,13 @@ public:
     ScriptValue getFromGlobalObject(const char* name);
 
 protected:
-    ScriptState(v8::Local<v8::Context>, PassRefPtr<DOMWrapperWorld>);
+    explicit ScriptState(v8::Local<v8::Context>);
 
 private:
     static int v8ContextPerContextDataIndex;
     v8::Isolate* m_isolate;
     // This persistent handle is weak.
     ScopedPersistent<v8::Context> m_context;
-
-    // This RefPtr doesn't cause a cycle because all persistent handles that DOMWrapperWorld holds are weak.
-    RefPtr<DOMWrapperWorld> m_world;
 
 #if ENABLE(ASSERT)
     bool m_globalObjectDetached;

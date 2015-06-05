@@ -70,7 +70,7 @@ public:
 
     static DOMWrapperWorld& world(v8::Local<v8::Context> context)
     {
-        return ScriptState::from(context)->world();
+        return mainWorld();
     }
 
     static DOMWrapperWorld& current(v8::Isolate* isolate)

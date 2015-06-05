@@ -5,7 +5,6 @@
 #include "config.h"
 #include "core/inspector/V8InspectorIsolateData.h"
 
-#include "bindings/core/v8/DOMWrapperWorld.h"
 #include "bindings/core/v8/ScriptState.h"
 
 namespace blink {
@@ -31,7 +30,7 @@ v8::Local<v8::Context> V8InspectorIsolateData::ensureScriptRegexpContext()
 {
     if (!m_scriptRegexpScriptState) {
         v8::Local<v8::Context> context(v8::Context::New(m_isolate));
-        m_scriptRegexpScriptState = ScriptState::create(context, nullptr);
+        m_scriptRegexpScriptState = ScriptState::create(context);
     }
     return m_scriptRegexpScriptState->context();
 }
