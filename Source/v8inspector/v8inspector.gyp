@@ -18,8 +18,6 @@
             'dependencies': [
                 '../config.gyp:config',
                 '../platform/blink_platform.gyp:blink_platform',
-#                '../core/core.gyp:webcore', # Replace with custom list of files.
-#                '../core/core.gyp:webcore_generated',
                 '../core/core.gyp:webcore_v8inspector',
                 '../wtf/wtf.gyp:wtf',
             ],
@@ -30,7 +28,7 @@
             ],
             'include_dirs': [
                 '..',  # WebKit/Source
-                '<(SHARED_INTERMEDIATE_DIR)/blink',  # gen/blink
+                '<(SHARED_INTERMEDIATE_DIR)/blink',  # gen/blink for InspectorBackendDispatcher
             ],
             'defines': [
                 'INSIDE_BLINK',

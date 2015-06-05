@@ -892,7 +892,9 @@
       'target_name': 'webcore_v8inspector',
       'type': 'static_library',
       'dependencies': [
-        'webcore_prerequisites',
+        # instead of 'webcore_prerequisites':
+        '<(DEPTH)/url/url.gyp:url_lib', # this one is required due to ScriptStreamer.h
+
         # Exported.
         # 'webcore_generated',
         #'../platform/blink_platform.gyp:blink_platform',
@@ -901,6 +903,7 @@
       ],
       'include_dirs': [
         '<@(webcore_include_dirs)',
+        '../..', # blink root for includes like 'public/platform/WebThread.h'
       ],
       'sources': [
         '<@(v8inspector_files)',
@@ -934,6 +937,12 @@
         '../bindings/core/v8/inspector/V8InjectedScriptHost.h',
         '../bindings/core/v8/inspector/V8JavaScriptCallFrame.cpp',
         '../bindings/core/v8/inspector/V8JavaScriptCallFrame.h',
+
+        # to be removed
+        '../bindings/core/v8/V8Binding.cpp',
+        '../bindings/core/v8/V8Binding.h',
+        '../bindings/core/v8/V8ScriptRunner.cpp',
+        '../bindings/core/v8/V8ScriptRunner.h',
       ],
     },
   ],  # targets
