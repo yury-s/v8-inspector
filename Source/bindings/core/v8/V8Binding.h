@@ -52,17 +52,7 @@
 
 namespace blink {
 
-class DOMWindow;
-class EventListener;
-class EventTarget;
 class ExceptionState;
-class ExecutionContext;
-class Frame;
-class LocalDOMWindow;
-class LocalFrame;
-class NodeFilter;
-class WorkerGlobalScope;
-class XPathNSResolver;
 
 template <typename T>
 struct V8TypeOf {
@@ -219,24 +209,6 @@ inline void v8SetReturnValue(const CallbackInfo& callbackInfo, Node* impl)
 
 // Special versions for DOMWindow, WorkerGlobalScope and EventTarget
 
-template<typename CallbackInfo>
-inline void v8SetReturnValue(const CallbackInfo& callbackInfo, DOMWindow* impl)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
-template<typename CallbackInfo>
-inline void v8SetReturnValue(const CallbackInfo& callbackInfo, EventTarget* impl)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
-template<typename CallbackInfo>
-inline void v8SetReturnValue(const CallbackInfo& callbackInfo, WorkerGlobalScope* impl)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
 template<typename CallbackInfo, typename T>
 inline void v8SetReturnValue(const CallbackInfo& callbackInfo, PassRefPtr<T> impl)
 {
@@ -289,24 +261,6 @@ inline void v8SetReturnValueForMainWorld(const CallbackInfo& callbackInfo, Node*
 
 // Special versions for DOMWindow, WorkerGlobalScope and EventTarget
 
-template<typename CallbackInfo>
-inline void v8SetReturnValueForMainWorld(const CallbackInfo& callbackInfo, DOMWindow* impl)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
-template<typename CallbackInfo>
-inline void v8SetReturnValueForMainWorld(const CallbackInfo& callbackInfo, EventTarget* impl)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
-template<typename CallbackInfo>
-inline void v8SetReturnValueForMainWorld(const CallbackInfo& callbackInfo, WorkerGlobalScope* impl)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
 template<typename CallbackInfo, typename T>
 inline void v8SetReturnValueForMainWorld(const CallbackInfo& callbackInfo, PassRefPtr<T> impl)
 {
@@ -346,25 +300,6 @@ inline void v8SetReturnValueFast(const CallbackInfo& callbackInfo, Node* impl, c
 }
 
 // Special versions for DOMWindow, WorkerGlobalScope and EventTarget
-
-template<typename CallbackInfo>
-inline void v8SetReturnValueFast(const CallbackInfo& callbackInfo, DOMWindow* impl, const ScriptWrappable*)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
-template<typename CallbackInfo>
-inline void v8SetReturnValueFast(const CallbackInfo& callbackInfo, EventTarget* impl, const ScriptWrappable*)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
-template<typename CallbackInfo>
-inline void v8SetReturnValueFast(const CallbackInfo& callbackInfo, WorkerGlobalScope* impl, const ScriptWrappable*)
-{
-    v8SetReturnValue(callbackInfo, toV8(impl, callbackInfo.Holder(), callbackInfo.GetIsolate()));
-}
-
 template<typename CallbackInfo, typename T, typename Wrappable>
 inline void v8SetReturnValueFast(const CallbackInfo& callbackInfo, PassRefPtr<T> impl, const Wrappable* wrappable)
 {
@@ -585,10 +520,6 @@ inline v8::MaybeLocal<v8::Value> v8DateOrNaN(v8::Isolate* isolate, double value)
     ASSERT(isolate);
     return v8::Date::New(isolate->GetCurrentContext(), std::isfinite(value) ? value : std::numeric_limits<double>::quiet_NaN());
 }
-
-// FIXME: Remove the special casing for NodeFilter and XPathNSResolver.
-PassRefPtrWillBeRawPtr<NodeFilter> toNodeFilter(v8::Local<v8::Value>, v8::Local<v8::Object>, ScriptState*);
-XPathNSResolver* toXPathNSResolver(ScriptState*, v8::Local<v8::Value>);
 
 bool toV8Sequence(v8::Local<v8::Value>, uint32_t& length, v8::Isolate*, ExceptionState&);
 
@@ -937,31 +868,6 @@ struct NativeValueTraits<JSONValuePtr> {
     CORE_EXPORT static JSONValuePtr nativeValue(v8::Isolate*, v8::Local<v8::Value>, ExceptionState&, int maxDepth = JSONValue::maxDepth);
 };
 
-CORE_EXPORT v8::Isolate* toIsolate(ExecutionContext*);
-CORE_EXPORT v8::Isolate* toIsolate(LocalFrame*);
-
-DOMWindow* toDOMWindow(v8::Isolate*, v8::Local<v8::Value>);
-DOMWindow* toDOMWindow(v8::Local<v8::Context>);
-LocalDOMWindow* enteredDOMWindow(v8::Isolate*);
-CORE_EXPORT LocalDOMWindow* currentDOMWindow(v8::Isolate*);
-LocalDOMWindow* callingDOMWindow(v8::Isolate*);
-ExecutionContext* toExecutionContext(v8::Local<v8::Context>);
-CORE_EXPORT ExecutionContext* currentExecutionContext(v8::Isolate*);
-CORE_EXPORT ExecutionContext* callingExecutionContext(v8::Isolate*);
-
-// Returns a V8 context associated with a ExecutionContext and a DOMWrapperWorld.
-// This method returns an empty context if there is no frame or the frame is already detached.
-CORE_EXPORT v8::Local<v8::Context> toV8Context(ExecutionContext*, DOMWrapperWorld&);
-// Returns a V8 context associated with a Frame and a DOMWrapperWorld.
-// This method returns an empty context if the frame is already detached.
-CORE_EXPORT v8::Local<v8::Context> toV8Context(Frame*, DOMWrapperWorld&);
-
-// Returns the frame object of the window object associated with
-// a context, if the window is currently being displayed in a Frame.
-CORE_EXPORT Frame* toFrameIfNotDetached(v8::Local<v8::Context>);
-
-CORE_EXPORT EventTarget* toEventTarget(v8::Isolate*, v8::Local<v8::Value>);
-
 // If the current context causes out of memory, JavaScript setting
 // is disabled and it returns true.
 bool handleOutOfMemory();
@@ -999,7 +905,6 @@ CORE_EXPORT bool isValidEnum(const Vector<String>& values, const char** validVal
 // These methods store hidden values into an array that is stored in the internal field of a DOM wrapper.
 bool addHiddenValueToArray(v8::Isolate*, v8::Local<v8::Object>, v8::Local<v8::Value>, int cacheIndex);
 void removeHiddenValueFromArray(v8::Isolate*, v8::Local<v8::Object>, v8::Local<v8::Value>, int cacheIndex);
-CORE_EXPORT void moveEventListenerToNewWrapper(v8::Isolate*, v8::Local<v8::Object>, EventListener* oldValue, v8::Local<v8::Value> newValue, int cacheIndex);
 
 // Result values for platform object 'deleter' methods,
 // http://www.w3.org/TR/WebIDL/#delete
@@ -1060,11 +965,6 @@ private:
     mutable String m_resourceName;
     mutable v8::Local<v8::Function> m_function;
 };
-
-PassRefPtr<TraceEvent::ConvertableToTraceFormat> devToolsTraceEventData(v8::Isolate*, ExecutionContext*, v8::Local<v8::Function>);
-
-// Callback functions used by generated code.
-CORE_EXPORT void v8ConstructorAttributeGetter(v8::Local<v8::Name> propertyName, const v8::PropertyCallbackInfo<v8::Value>&);
 
 typedef void (*InstallTemplateFunction)(v8::Local<v8::FunctionTemplate>, v8::Isolate*);
 

@@ -31,33 +31,8 @@
 #include "config.h"
 #include "bindings/core/v8/V8Binding.h"
 
-#include "bindings/core/v8/ScriptController.h"
-#include "bindings/core/v8/V8AbstractEventListener.h"
 #include "bindings/core/v8/V8BindingMacros.h"
-#include "bindings/core/v8/V8Element.h"
-#include "bindings/core/v8/V8EventTarget.h"
-#include "bindings/core/v8/V8NodeFilter.h"
-#include "bindings/core/v8/V8NodeFilterCondition.h"
 #include "bindings/core/v8/V8ObjectConstructor.h"
-#include "bindings/core/v8/V8Window.h"
-#include "bindings/core/v8/V8WorkerGlobalScope.h"
-#include "bindings/core/v8/V8XPathNSResolver.h"
-#include "bindings/core/v8/WindowProxy.h"
-#include "bindings/core/v8/WorkerScriptController.h"
-#include "bindings/core/v8/custom/V8CustomXPathNSResolver.h"
-#include "core/dom/Document.h"
-#include "core/dom/Element.h"
-#include "core/dom/NodeFilter.h"
-#include "core/dom/QualifiedName.h"
-#include "core/frame/LocalDOMWindow.h"
-#include "core/frame/LocalFrame.h"
-#include "core/frame/Settings.h"
-#include "core/inspector/BindingVisitors.h"
-#include "core/inspector/InspectorTraceEvents.h"
-#include "core/loader/FrameLoader.h"
-#include "core/loader/FrameLoaderClient.h"
-#include "core/workers/WorkerGlobalScope.h"
-#include "core/xml/XPathNSResolver.h"
 #include "platform/EventTracer.h"
 #include "platform/JSONValues.h"
 #include "wtf/MainThread.h"
@@ -92,22 +67,6 @@ v8::Local<v8::Value> createMinimumArityTypeErrorForConstructor(v8::Isolate* isol
 void setMinimumArityTypeError(ExceptionState& exceptionState, unsigned expected, unsigned provided)
 {
     exceptionState.throwTypeError(ExceptionMessages::notEnoughArguments(expected, provided));
-}
-
-PassRefPtrWillBeRawPtr<NodeFilter> toNodeFilter(v8::Local<v8::Value> callback, v8::Local<v8::Object> creationContext, ScriptState* scriptState)
-{
-    if (callback->IsNull())
-        return nullptr;
-    RefPtrWillBeRawPtr<NodeFilter> filter = NodeFilter::create();
-
-    v8::Local<v8::Value> filterWrapper = toV8(filter.get(), creationContext, scriptState->isolate());
-    if (filterWrapper.IsEmpty())
-        return nullptr;
-
-    RefPtrWillBeRawPtr<NodeFilterCondition> condition = V8NodeFilterCondition::create(callback, filterWrapper.As<v8::Object>(), scriptState);
-    filter->setCondition(condition.release());
-
-    return filter.release();
 }
 
 bool toBooleanSlow(v8::Isolate* isolate, v8::Local<v8::Value> value, ExceptionState& exceptionState)
@@ -643,144 +602,6 @@ String toUSVString(v8::Isolate* isolate, v8::Local<v8::Value> value, ExceptionSt
     return replaceUnmatchedSurrogates(x);
 }
 
-XPathNSResolver* toXPathNSResolver(ScriptState* scriptState, v8::Local<v8::Value> value)
-{
-    XPathNSResolver* resolver = nullptr;
-    if (V8XPathNSResolver::hasInstance(value, scriptState->isolate()))
-        resolver = V8XPathNSResolver::toImpl(v8::Local<v8::Object>::Cast(value));
-    else if (value->IsObject())
-        resolver = V8CustomXPathNSResolver::create(scriptState, value.As<v8::Object>());
-    return resolver;
-}
-
-DOMWindow* toDOMWindow(v8::Isolate* isolate, v8::Local<v8::Value> value)
-{
-    if (value.IsEmpty() || !value->IsObject())
-        return 0;
-
-    v8::Local<v8::Object> windowWrapper = V8Window::findInstanceInPrototypeChain(v8::Local<v8::Object>::Cast(value), isolate);
-    if (!windowWrapper.IsEmpty())
-        return V8Window::toImpl(windowWrapper);
-    return 0;
-}
-
-DOMWindow* toDOMWindow(v8::Local<v8::Context> context)
-{
-    if (context.IsEmpty())
-        return 0;
-    return toDOMWindow(context->GetIsolate(), context->Global());
-}
-
-LocalDOMWindow* enteredDOMWindow(v8::Isolate* isolate)
-{
-    LocalDOMWindow* window = toLocalDOMWindow(toDOMWindow(isolate->GetEnteredContext()));
-    if (!window) {
-        // We don't always have an entered DOM window, for example during microtask callbacks from V8
-        // (where the entered context may be the DOM-in-JS context). In that case, we fall back
-        // to the current context.
-        window = currentDOMWindow(isolate);
-        ASSERT(window);
-    }
-    return window;
-}
-
-LocalDOMWindow* currentDOMWindow(v8::Isolate* isolate)
-{
-    return toLocalDOMWindow(toDOMWindow(isolate->GetCurrentContext()));
-}
-
-LocalDOMWindow* callingDOMWindow(v8::Isolate* isolate)
-{
-    v8::Local<v8::Context> context = isolate->GetCallingContext();
-    if (context.IsEmpty()) {
-        // Unfortunately, when processing script from a plugin, we might not
-        // have a calling context. In those cases, we fall back to the
-        // entered context.
-        context = isolate->GetEnteredContext();
-    }
-    return toLocalDOMWindow(toDOMWindow(context));
-}
-
-ExecutionContext* toExecutionContext(v8::Local<v8::Context> context)
-{
-    if (context.IsEmpty())
-        return 0;
-    v8::Local<v8::Object> global = context->Global();
-    v8::Local<v8::Object> windowWrapper = V8Window::findInstanceInPrototypeChain(global, context->GetIsolate());
-    if (!windowWrapper.IsEmpty())
-        return V8Window::toImpl(windowWrapper)->executionContext();
-    v8::Local<v8::Object> workerWrapper = V8WorkerGlobalScope::findInstanceInPrototypeChain(global, context->GetIsolate());
-    if (!workerWrapper.IsEmpty())
-        return V8WorkerGlobalScope::toImpl(workerWrapper)->executionContext();
-    // FIXME: Is this line of code reachable?
-    return 0;
-}
-
-ExecutionContext* currentExecutionContext(v8::Isolate* isolate)
-{
-    return toExecutionContext(isolate->GetCurrentContext());
-}
-
-ExecutionContext* callingExecutionContext(v8::Isolate* isolate)
-{
-    v8::Local<v8::Context> context = isolate->GetCallingContext();
-    if (context.IsEmpty()) {
-        // Unfortunately, when processing script from a plugin, we might not
-        // have a calling context. In those cases, we fall back to the
-        // entered context.
-        context = isolate->GetEnteredContext();
-    }
-    return toExecutionContext(context);
-}
-
-Frame* toFrameIfNotDetached(v8::Local<v8::Context> context)
-{
-    DOMWindow* window = toDOMWindow(context);
-    if (window && window->isCurrentlyDisplayedInFrame())
-        return window->frame();
-    // We return 0 here because |context| is detached from the Frame. If we
-    // did return |frame| we could get in trouble because the frame could be
-    // navigated to another security origin.
-    return nullptr;
-}
-
-EventTarget* toEventTarget(v8::Isolate* isolate, v8::Local<v8::Value> value)
-{
-    // We need to handle a DOMWindow specially, because a DOMWindow wrapper
-    // exists on a prototype chain of v8Value.
-    if (DOMWindow* window = toDOMWindow(isolate, value))
-        return static_cast<EventTarget*>(window);
-    if (V8EventTarget::hasInstance(value, isolate)) {
-        v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
-        return toWrapperTypeInfo(object)->toEventTarget(object);
-    }
-    return 0;
-}
-
-v8::Local<v8::Context> toV8Context(ExecutionContext* context, DOMWrapperWorld& world)
-{
-    ASSERT(context);
-    if (context->isDocument()) {
-        if (LocalFrame* frame = toDocument(context)->frame())
-            return frame->script().windowProxy(world)->context();
-    } else if (context->isWorkerGlobalScope()) {
-        if (WorkerScriptController* script = toWorkerGlobalScope(context)->script())
-            return script->context();
-    }
-    return v8::Local<v8::Context>();
-}
-
-v8::Local<v8::Context> toV8Context(Frame* frame, DOMWrapperWorld& world)
-{
-    if (!frame)
-        return v8::Local<v8::Context>();
-    v8::Local<v8::Context> context = frame->windowProxy(world)->context();
-    if (context.IsEmpty())
-        return v8::Local<v8::Context>();
-    Frame* attachedFrame = toFrameIfNotDetached(context);
-    return frame == attachedFrame ? context : v8::Local<v8::Context>();
-}
-
 void crashIfV8IsDead()
 {
     if (v8::V8::IsDead()) {
@@ -843,34 +664,6 @@ void removeHiddenValueFromArray(v8::Isolate* isolate, v8::Local<v8::Object> obje
             return;
         }
     }
-}
-
-void moveEventListenerToNewWrapper(v8::Isolate* isolate, v8::Local<v8::Object> object, EventListener* oldValue, v8::Local<v8::Value> newValue, int arrayIndex)
-{
-    if (oldValue) {
-        V8AbstractEventListener* oldListener = V8AbstractEventListener::cast(oldValue);
-        if (oldListener) {
-            v8::Local<v8::Object> oldListenerObject = oldListener->getExistingListenerObject();
-            if (!oldListenerObject.IsEmpty())
-                removeHiddenValueFromArray(isolate, object, oldListenerObject, arrayIndex);
-        }
-    }
-    // Non-callable input is treated as null and ignored
-    if (newValue->IsFunction())
-        addHiddenValueToArray(isolate, object, newValue, arrayIndex);
-}
-
-v8::Isolate* toIsolate(ExecutionContext* context)
-{
-    if (context && context->isDocument())
-        return V8PerIsolateData::mainThreadIsolate();
-    return v8::Isolate::GetCurrent();
-}
-
-v8::Isolate* toIsolate(LocalFrame* frame)
-{
-    ASSERT(frame);
-    return frame->script().isolate();
 }
 
 JSONValuePtr NativeValueTraits<JSONValuePtr>::nativeValue(v8::Isolate* isolate, v8::Local<v8::Value> value, ExceptionState& exceptionState, int maxDepth)
@@ -976,24 +769,6 @@ String DevToolsFunctionInfo::resourceName() const
 {
     ensureInitialized();
     return m_resourceName;
-}
-
-PassRefPtr<TraceEvent::ConvertableToTraceFormat> devToolsTraceEventData(v8::Isolate* isolate, ExecutionContext* context, v8::Local<v8::Function> function)
-{
-    DevToolsFunctionInfo info(function);
-    return InspectorFunctionCallEvent::data(context, info.scriptId(), info.resourceName(), info.lineNumber());
-}
-
-void v8ConstructorAttributeGetter(v8::Local<v8::Name> propertyName, const v8::PropertyCallbackInfo<v8::Value>& info)
-{
-    TRACE_EVENT_SET_SAMPLING_STATE("blink", "DOMGetter");
-    v8::Local<v8::Value> data = info.Data();
-    ASSERT(data->IsExternal());
-    V8PerContextData* perContextData = V8PerContextData::from(info.Holder()->CreationContext());
-    if (!perContextData)
-        return;
-    v8SetReturnValue(info, perContextData->constructorForType(WrapperTypeInfo::unwrap(data)));
-    TRACE_EVENT_SET_SAMPLING_STATE("v8", "V8Execution");
 }
 
 } // namespace blink
