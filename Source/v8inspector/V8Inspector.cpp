@@ -15,7 +15,6 @@
 #include "core/inspector/InspectorStateClient.h"
 #include "core/inspector/WorkerDebuggerAgent.h"
 #include "core/inspector/WorkerRuntimeAgent.h"
-#include "core/workers/WorkerReportingProxy.h"
 #include "wtf/PassOwnPtr.h"
 
 namespace blink {
