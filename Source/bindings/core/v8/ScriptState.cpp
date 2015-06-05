@@ -101,15 +101,4 @@ ScriptValue ScriptState::getFromGlobalObject(const char* name)
     return ScriptValue(this, v8Value);
 }
 
-ExecutionContext* ScriptState::executionContext() const
-{
-    v8::HandleScope scope(m_isolate);
-    return toExecutionContext(context());
-}
-
-void ScriptState::setExecutionContext(ExecutionContext*)
-{
-    ASSERT_NOT_REACHED();
-}
-
 }

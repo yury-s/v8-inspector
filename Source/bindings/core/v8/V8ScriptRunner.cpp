@@ -99,14 +99,12 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::compileScript(v8::Local<v8::String> c
     return script;
 }
 
-v8::MaybeLocal<v8::Value> V8ScriptRunner::runCompiledScript(v8::Isolate* isolate, v8::Local<v8::Script> script, ExecutionContext* context)
+v8::MaybeLocal<v8::Value> V8ScriptRunner::runCompiledScript(v8::Isolate* isolate, v8::Local<v8::Script> script)
 {
     ASSERT(!script.IsEmpty());
 
     if (V8RecursionScope::recursionLevel(isolate) >= kMaxRecursionDepth)
         return throwStackOverflowExceptionIfNeeded(isolate);
-
-    RELEASE_ASSERT(!context->isIteratingOverObservers());
 
     // Run the script and keep track of the current recursion depth.
     v8::MaybeLocal<v8::Value> result;
@@ -135,12 +133,10 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::compileAndRunInternalScript(v8::Local<
     return result;
 }
 
-v8::MaybeLocal<v8::Value> V8ScriptRunner::callFunction(v8::Local<v8::Function> function, ExecutionContext* context, v8::Local<v8::Value> receiver, int argc, v8::Local<v8::Value> args[], v8::Isolate* isolate)
+v8::MaybeLocal<v8::Value> V8ScriptRunner::callFunction(v8::Local<v8::Function> function, v8::Local<v8::Value> receiver, int argc, v8::Local<v8::Value> args[], v8::Isolate* isolate)
 {
     if (V8RecursionScope::recursionLevel(isolate) >= kMaxRecursionDepth)
         return v8::MaybeLocal<v8::Value>(throwStackOverflowExceptionIfNeeded(isolate));
-
-    RELEASE_ASSERT(!context->isIteratingOverObservers());
 
     if (ScriptForbiddenScope::isScriptForbidden()) {
         throwScriptForbiddenException(isolate);

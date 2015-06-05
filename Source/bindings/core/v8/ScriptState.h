@@ -16,7 +16,6 @@
 namespace blink {
 
 class DOMWrapperWorld;
-class ExecutionContext;
 class ScriptValue;
 
 // ScriptState is created when v8::Context is created.
@@ -78,8 +77,6 @@ public:
 
     v8::Isolate* isolate() const { return m_isolate; }
     DOMWrapperWorld& world() const { return *m_world; }
-    virtual ExecutionContext* executionContext() const;
-    virtual void setExecutionContext(ExecutionContext*);
 
     // This can return an empty handle if the v8::Context is gone.
     v8::Local<v8::Context> context() const { return m_context.newLocal(m_isolate); }

@@ -282,7 +282,7 @@ void V8InjectedScriptHost::evaluateWithExceptionDetailsCallback(const v8::Functi
         setExceptionAsReturnValue(info, wrappedResult, tryCatch);
         return;
     }
-    if (!v8Call(V8ScriptRunner::runCompiledScript(isolate, script, currentExecutionContext(isolate)), result, tryCatch)) {
+    if (!v8Call(V8ScriptRunner::runCompiledScript(isolate, script), result, tryCatch)) {
         setExceptionAsReturnValue(info, wrappedResult, tryCatch);
         return;
     }

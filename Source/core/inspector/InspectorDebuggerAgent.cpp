@@ -953,7 +953,7 @@ void InspectorDebuggerAgent::runScript(ErrorString* errorString, const ScriptId&
     v8::TryCatch tryCatch;
     v8::Local<v8::Value> value;
     ScriptValue scriptValue;
-    if (v8Call(V8ScriptRunner::runCompiledScript(isolate, script, scriptState->executionContext()), value, tryCatch)) {
+    if (v8Call(V8ScriptRunner::runCompiledScript(isolate, script), value, tryCatch)) {
         scriptValue = ScriptValue(scriptState, value);
     } else {
         scriptValue = ScriptValue(scriptState, tryCatch.Exception());

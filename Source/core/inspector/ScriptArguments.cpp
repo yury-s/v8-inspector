@@ -91,10 +91,6 @@ private:
         }
         if (value->IsArray())
             return append(v8::Local<v8::Array>::Cast(value));
-        if (toDOMWindow(m_isolate, value)) {
-            m_builder.append("[object Window]");
-            return true;
-        }
         if (value->IsObject()
             && !value->IsDate()
             && !value->IsFunction()

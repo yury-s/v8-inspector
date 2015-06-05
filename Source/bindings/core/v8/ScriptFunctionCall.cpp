@@ -137,7 +137,7 @@ ScriptValue ScriptFunctionCall::callWithoutExceptionHandling()
     }
 
     v8::Local<v8::Value> result;
-    if (!V8ScriptRunner::callFunction(function, m_scriptState->executionContext(), thisObject, m_arguments.size(), info.get(), m_scriptState->isolate()).ToLocal(&result))
+    if (!V8ScriptRunner::callFunction(function, thisObject, m_arguments.size(), info.get(), m_scriptState->isolate()).ToLocal(&result))
         return ScriptValue();
     return ScriptValue(m_scriptState.get(), result);
 }
