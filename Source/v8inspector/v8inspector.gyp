@@ -4,7 +4,6 @@
 
 {
     'includes': [
-        '../bindings/bindings.gypi',
         '../build/features.gypi',
         '../build/scripts/scripts.gypi',
         '../core/core.gypi',
