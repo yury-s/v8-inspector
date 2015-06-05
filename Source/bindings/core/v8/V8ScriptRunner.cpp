@@ -27,71 +27,20 @@
 #include "bindings/core/v8/V8ScriptRunner.h"
 
 #include "bindings/core/v8/V8Binding.h"
-#include "bindings/core/v8/V8RecursionScope.h"
-#include "bindings/core/v8/V8ThrowException.h"
-#include "platform/ScriptForbiddenScope.h"
-#include "platform/TraceEvent.h"
-#include "public/platform/Platform.h"
-#include "wtf/CurrentTime.h"
-
-#if defined(WTF_OS_WIN)
-#include <malloc.h>
-#else
-#include <alloca.h>
-#endif
 
 namespace blink {
 
-namespace {
-
-// Used to throw an exception before we exceed the C++ stack and crash.
-// This limit was arrived at arbitrarily. crbug.com/449744
-const int kMaxRecursionDepth = 44;
-
-// In order to make sure all pending messages to be processed in
-// v8::Function::Call, we don't call throwStackOverflowException
-// directly. Instead, we create a v8::Function of
-// throwStackOverflowException and call it.
-void throwStackOverflowException(const v8::FunctionCallbackInfo<v8::Value>& info)
-{
-    V8ThrowException::throwRangeError(info.GetIsolate(), "Maximum call stack size exceeded.");
-}
-
-void throwScriptForbiddenException(v8::Isolate* isolate)
-{
-    V8ThrowException::throwGeneralError(isolate, "Script execution is forbidden.");
-}
-
-v8::Local<v8::Value> throwStackOverflowExceptionIfNeeded(v8::Isolate* isolate)
-{
-    if (V8PerIsolateData::from(isolate)->isHandlingRecursionLevelError()) {
-        // If we are already handling a recursion level error, we should
-        // not invoke v8::Function::Call.
-        return v8::Undefined(isolate);
-    }
-    V8PerIsolateData::from(isolate)->setIsHandlingRecursionLevelError(true);
-    v8::Local<v8::Value> result = v8::Function::New(isolate, throwStackOverflowException)->Call(v8::Undefined(isolate), 0, 0);
-    V8PerIsolateData::from(isolate)->setIsHandlingRecursionLevelError(false);
-    return result;
-}
-
-} // namespace
-
 v8::MaybeLocal<v8::Script> V8ScriptRunner::compileScript(v8::Local<v8::String> code, const String& fileName, const String& sourceMapUrl, const TextPosition& scriptStartPosition, v8::Isolate* isolate, bool isInternalScript)
 {
-    AccessControlStatus accessControlStatus;
-
     // NOTE: For compatibility with WebCore, ScriptSourceCode's line starts at
     // 1, whereas v8 starts at 0.
     v8::ScriptOrigin origin(
         v8String(isolate, fileName),
         v8::Integer::New(isolate, scriptStartPosition.m_line.zeroBasedInt()),
         v8::Integer::New(isolate, scriptStartPosition.m_column.zeroBasedInt()),
-        v8Boolean(accessControlStatus == SharableCrossOrigin, isolate),
+        v8Boolean(false, isolate),
         v8::Local<v8::Integer>(),
-        v8Boolean(isInternalScript, isolate),
-        v8String(isolate, sourceMapUrl),
-        v8Boolean(accessControlStatus == OpaqueResource, isolate));
+        v8Boolean(isInternalScript, isolate));
 
 
     v8::ScriptCompiler::Source source(code, origin);
@@ -103,19 +52,8 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::runCompiledScript(v8::Isolate* isolate
 {
     ASSERT(!script.IsEmpty());
 
-    if (V8RecursionScope::recursionLevel(isolate) >= kMaxRecursionDepth)
-        return throwStackOverflowExceptionIfNeeded(isolate);
-
     // Run the script and keep track of the current recursion depth.
-    v8::MaybeLocal<v8::Value> result;
-    {
-        if (ScriptForbiddenScope::isScriptForbidden()) {
-            throwScriptForbiddenException(isolate);
-            return v8::MaybeLocal<v8::Value>();
-        }
-        V8RecursionScope recursionScope(isolate);
-        result = script->Run(isolate->GetCurrentContext());
-    }
+    v8::MaybeLocal<v8::Value> result = script->Run(isolate->GetCurrentContext());
 
     crashIfV8IsDead();
     return result;
@@ -127,7 +65,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::compileAndRunInternalScript(v8::Local<
     if (!V8ScriptRunner::compileScript(source, fileName, String(), scriptStartPosition, isolate, true).ToLocal(&script))
         return v8::MaybeLocal<v8::Value>();
 
-    V8RecursionScope::MicrotaskSuppression recursionScope(isolate);
     v8::MaybeLocal<v8::Value> result = script->Run(isolate->GetCurrentContext());
     crashIfV8IsDead();
     return result;
@@ -135,14 +72,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::compileAndRunInternalScript(v8::Local<
 
 v8::MaybeLocal<v8::Value> V8ScriptRunner::callFunction(v8::Local<v8::Function> function, v8::Local<v8::Value> receiver, int argc, v8::Local<v8::Value> args[], v8::Isolate* isolate)
 {
-    if (V8RecursionScope::recursionLevel(isolate) >= kMaxRecursionDepth)
-        return v8::MaybeLocal<v8::Value>(throwStackOverflowExceptionIfNeeded(isolate));
-
-    if (ScriptForbiddenScope::isScriptForbidden()) {
-        throwScriptForbiddenException(isolate);
-        return v8::MaybeLocal<v8::Value>();
-    }
-    V8RecursionScope recursionScope(isolate);
     v8::MaybeLocal<v8::Value> result = function->Call(isolate->GetCurrentContext(), receiver, argc, args);
     crashIfV8IsDead();
     return result;
@@ -150,7 +79,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::callFunction(v8::Local<v8::Function> f
 
 v8::MaybeLocal<v8::Value> V8ScriptRunner::callInternalFunction(v8::Local<v8::Function> function, v8::Local<v8::Value> receiver, int argc, v8::Local<v8::Value> args[], v8::Isolate* isolate)
 {
-    V8RecursionScope::MicrotaskSuppression recursionScope(isolate);
     v8::MaybeLocal<v8::Value> result = function->Call(isolate->GetCurrentContext(), receiver, argc, args);
     crashIfV8IsDead();
     return result;
@@ -158,7 +86,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::callInternalFunction(v8::Local<v8::Fun
 
 v8::MaybeLocal<v8::Object> V8ScriptRunner::instantiateObject(v8::Isolate* isolate, v8::Local<v8::Function> function, int argc, v8::Local<v8::Value> argv[])
 {
-    V8RecursionScope::MicrotaskSuppression scope(isolate);
     v8::MaybeLocal<v8::Object> result = function->NewInstance(isolate->GetCurrentContext(), argc, argv);
     crashIfV8IsDead();
     return result;
