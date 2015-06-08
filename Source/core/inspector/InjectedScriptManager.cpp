@@ -37,8 +37,6 @@
 #include "core/inspector/InjectedScriptNative.h"
 #include "core/inspector/JSONParser.h"
 #include "platform/JSONValues.h"
-#include "public/platform/Platform.h"
-#include "public/platform/WebData.h"
 #include "wtf/PassOwnPtr.h"
 
 namespace blink {
@@ -159,8 +157,8 @@ void InjectedScriptManager::setCustomObjectFormatterEnabled(bool enabled)
 
 String InjectedScriptManager::injectedScriptSource()
 {
-    const WebData& injectedScriptSourceResource = Platform::current()->loadResource("InjectedScriptSource.js");
-    return String(injectedScriptSourceResource.data(), injectedScriptSourceResource.size());
+    // FIXME load InjectedScriptSource.js
+    return String("InjectedScriptSource.js");
 }
 
 InjectedScript InjectedScriptManager::injectedScriptFor(ScriptState* inspectedScriptState)
