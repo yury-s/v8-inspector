@@ -33,7 +33,6 @@
 
 #include "bindings/core/v8/V8BindingMacros.h"
 #include "bindings/core/v8/V8ObjectConstructor.h"
-#include "platform/EventTracer.h"
 #include "platform/JSONValues.h"
 #include "wtf/MainThread.h"
 #include "wtf/MathExtras.h"

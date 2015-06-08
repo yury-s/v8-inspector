@@ -5,7 +5,6 @@
 #include "config.h"
 #include "bindings/core/v8/inspector/V8InjectedScriptHost.h"
 
-#include "bindings/core/v8/BindingSecurity.h"
 #include "bindings/core/v8/ExceptionState.h"
 #include "bindings/core/v8/ScriptValue.h"
 #include "bindings/core/v8/V8Binding.h"

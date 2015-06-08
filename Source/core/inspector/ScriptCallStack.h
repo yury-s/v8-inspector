@@ -59,7 +59,6 @@ public:
     void setAsyncCallStack(PassRefPtrWillBeRawPtr<ScriptAsyncCallStack>);
 
     PassRefPtr<TypeBuilder::Array<TypeBuilder::Console::CallFrame> > buildInspectorArray() const;
-    void toTracedValue(TracedValue*, const char* name) const;
 
     DECLARE_TRACE();
 

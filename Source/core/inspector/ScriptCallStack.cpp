@@ -32,7 +32,6 @@
 #include "core/inspector/ScriptCallStack.h"
 
 #include "core/inspector/ScriptAsyncCallStack.h"
-#include "platform/TracedValue.h"
 
 namespace blink {
 
@@ -77,14 +76,6 @@ PassRefPtr<TypeBuilder::Array<TypeBuilder::Console::CallFrame> > ScriptCallStack
     for (size_t i = 0; i < m_frames.size(); i++)
         frames->addItem(m_frames.at(i).buildInspectorObject());
     return frames;
-}
-
-void ScriptCallStack::toTracedValue(TracedValue* value, const char* name) const
-{
-    value->beginArray(name);
-    for (size_t i = 0; i < m_frames.size(); i++)
-        m_frames.at(i).toTracedValue(value);
-    value->endArray();
 }
 
 DEFINE_TRACE(ScriptCallStack)

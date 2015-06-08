@@ -31,8 +31,6 @@
 #include "config.h"
 #include "core/inspector/ScriptCallFrame.h"
 
-#include "platform/TracedValue.h"
-
 namespace blink {
 
 ScriptCallFrame::ScriptCallFrame()
@@ -68,17 +66,6 @@ PassRefPtr<TypeBuilder::Console::CallFrame> ScriptCallFrame::buildInspectorObjec
         .setLineNumber(m_lineNumber)
         .setColumnNumber(m_column)
         .release();
-}
-
-void ScriptCallFrame::toTracedValue(TracedValue* value) const
-{
-    value->beginDictionary();
-    value->setString("functionName", m_functionName);
-    value->setString("scriptId", m_scriptId);
-    value->setString("url", m_scriptName);
-    value->setInteger("lineNumber", m_lineNumber);
-    value->setInteger("columnNumber", m_column);
-    value->endDictionary();
 }
 
 } // namespace blink

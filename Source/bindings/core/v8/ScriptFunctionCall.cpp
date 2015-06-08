@@ -31,7 +31,6 @@
 #include "config.h"
 #include "bindings/core/v8/ScriptFunctionCall.h"
 
-#include "bindings/core/v8/ScriptController.h"
 #include "bindings/core/v8/ScriptState.h"
 #include "bindings/core/v8/ScriptValue.h"
 #include "bindings/core/v8/V8Binding.h"

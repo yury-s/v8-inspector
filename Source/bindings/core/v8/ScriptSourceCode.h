@@ -31,32 +31,19 @@
 #ifndef ScriptSourceCode_h
 #define ScriptSourceCode_h
 
-#include "bindings/core/v8/ScriptStreamer.h"
 #include "core/CoreExport.h"
-#include "core/fetch/ResourcePtr.h"
-#include "core/fetch/ScriptResource.h"
-#include "platform/heap/Handle.h"
 #include "platform/weborigin/KURL.h"
 #include "wtf/text/TextPosition.h"
 #include "wtf/text/WTFString.h"
 
 namespace blink {
 
-template <class R> class ResourcePtr;
-class ScriptResource;
-
 class CORE_EXPORT ScriptSourceCode final {
-    ALLOW_ONLY_INLINE_ALLOCATION();
 public:
     ScriptSourceCode();
-    // We lose the encoding information from ScriptResource.
-    // Not sure if that matters.
-    explicit ScriptSourceCode(ScriptResource*);
     ScriptSourceCode(const String&, const KURL& = KURL(), const TextPosition& startPosition = TextPosition::minimumPosition());
-    ScriptSourceCode(PassRefPtrWillBeRawPtr<ScriptStreamer>, ScriptResource*);
 
     ~ScriptSourceCode();
-    DECLARE_TRACE();
 
     bool isEmpty() const { return m_source.isEmpty(); }
 
@@ -65,20 +52,15 @@ public:
     bool isNull() const { return m_source.isNull(); }
 
     const String& source() const { return m_source; }
-    ScriptResource* resource() const { return m_resource.get(); }
     const KURL& url() const;
     int startLine() const { return m_startPosition.m_line.oneBasedInt(); }
     const TextPosition& startPosition() const { return m_startPosition; }
     String sourceMapUrl() const;
 
-    ScriptStreamer* streamer() const { return m_streamer.get(); }
-
 private:
     void treatNullSourceAsEmpty();
 
     String m_source;
-    ResourcePtr<ScriptResource> m_resource;
-    RefPtrWillBeMember<ScriptStreamer> m_streamer;
     mutable KURL m_url;
     TextPosition m_startPosition;
 };
