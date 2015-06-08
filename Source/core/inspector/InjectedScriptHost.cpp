@@ -78,10 +78,6 @@ void InjectedScriptHost::inspectImpl(PassRefPtr<JSONValue> object, PassRefPtr<JS
     }
 }
 
-void InjectedScriptHost::getEventListenersImpl(EventTarget* target, Vector<EventListenerInfo>& listenersArray)
-{
-}
-
 void InjectedScriptHost::clearConsoleMessages()
 {
 }

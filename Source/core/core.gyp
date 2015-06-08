@@ -111,6 +111,12 @@
         '../core/InspectorTypeBuilder.cpp',
         '../core/InspectorTypeBuilder.h',
 
+        # platform
+        '../platform/JSONValues.cpp',
+        '../platform/JSONValues.h',
+        '../platform/Decimal.cpp',
+        '../platform/Decimal.h',
+
         # newly added in the experiment
         '../core/inspector/V8InspectorIsolateData.cpp',
         '../core/inspector/V8InspectorIsolateData.h',

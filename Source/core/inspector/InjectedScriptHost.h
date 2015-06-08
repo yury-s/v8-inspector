@@ -31,7 +31,6 @@
 #define InjectedScriptHost_h
 
 #include "bindings/core/v8/ScriptState.h"
-#include "bindings/core/v8/ScriptWrappable.h"
 #include "core/InspectorTypeBuilder.h"
 #include "core/inspector/InjectedScriptHostClient.h"
 #include "wtf/Functional.h"
@@ -85,7 +84,6 @@ public:
     InspectableObject* inspectedObject(unsigned num);
 
     void inspectImpl(PassRefPtr<JSONValue> objectToInspect, PassRefPtr<JSONValue> hints);
-    void getEventListenersImpl(EventTarget*, Vector<EventListenerInfo>& listenersArray);
 
     void clearConsoleMessages();
     void debugFunction(const String& scriptId, int lineNumber, int columnNumber);

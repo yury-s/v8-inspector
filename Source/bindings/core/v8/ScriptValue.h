@@ -174,6 +174,7 @@ public:
     v8::Local<v8::Value> v8ValueUnsafe() const;
 
     bool toString(String&) const;
+    PassRefPtr<JSONValue> toJSONValue(ScriptState*) const;
 
     static ScriptValue createNull(ScriptState*);
 

@@ -7,7 +7,7 @@
         '../build/features.gypi',
         '../build/scripts/scripts.gypi',
         '../core/core.gypi',
-        '../platform/blink_platform.gypi',
+#        '../platform/blink_platform.gypi',
         '../wtf/wtf.gypi',
     ],
     'targets': [
@@ -16,9 +16,9 @@
             'type': 'executable',
             'dependencies': [
                 '../config.gyp:config',
-                '../platform/blink_platform.gyp:blink_platform',
                 '../core/core.gyp:webcore_v8inspector',
                 '../wtf/wtf.gyp:wtf',
+                '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
             ],
             'sources': [
                 'V8InspectorMain.cpp',

@@ -7,8 +7,6 @@
 
 #include "bindings/core/v8/V8Binding.h"
 #include "bindings/core/v8/V8ScriptRunner.h"
-#include "public/platform/Platform.h"
-#include "public/platform/WebData.h"
 
 namespace blink {
 
@@ -30,8 +28,9 @@ DEFINE_TRACE(ScriptDebuggerBase)
 
 v8::Local<v8::Object> ScriptDebuggerBase::compileDebuggerScript()
 {
-    const WebData& debuggerScriptSourceResource = Platform::current()->loadResource("DebuggerScriptSource.js");
-    v8::Local<v8::String> source = v8String(m_isolate, String(debuggerScriptSourceResource.data(), debuggerScriptSourceResource.size()));
+    fprintf(stderr, "ScriptDebuggerBase::compileDebuggerScript() not implemented load of DebuggerScriptSource.js\n");
+    // FIXME: load script
+    v8::Local<v8::String> source = v8String(m_isolate, String(";"));
     v8::Local<v8::Value> value;
     if (!V8ScriptRunner::compileAndRunInternalScript(source, m_isolate).ToLocal(&value))
         return v8::Local<v8::Object>();

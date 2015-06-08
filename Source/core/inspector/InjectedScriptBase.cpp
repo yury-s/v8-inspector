@@ -46,10 +46,7 @@ namespace blink {
 PassRefPtr<JSONValue> toJSONValue(const ScriptValue& value)
 {
     ScriptState* scriptState = value.scriptState();
-    ASSERT(scriptState->contextIsValid());
-    ScriptState::Scope scope(scriptState);
-    NonThrowableExceptionState exceptionState;
-    return ScriptValue::to<JSONValuePtr>(scriptState->isolate(), value, exceptionState);
+    return value.toJSONValue(scriptState);
 }
 
 static PassRefPtr<TypeBuilder::Debugger::ExceptionDetails> toExceptionDetails(PassRefPtr<JSONObject> object)
