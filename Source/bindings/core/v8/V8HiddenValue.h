@@ -53,7 +53,6 @@ public:
     static v8::Local<v8::Value> getHiddenValue(v8::Isolate*, v8::Local<v8::Object>, v8::Local<v8::String>);
     static bool setHiddenValue(v8::Isolate*, v8::Local<v8::Object>, v8::Local<v8::String>, v8::Local<v8::Value>);
     static bool deleteHiddenValue(v8::Isolate*, v8::Local<v8::Object>, v8::Local<v8::String>);
-    static v8::Local<v8::Value> getHiddenValueFromMainWorldWrapper(v8::Isolate*, ScriptWrappable*, v8::Local<v8::String>);
 
 private:
 #define V8_DECLARE_FIELD(name) ScopedPersistent<v8::String> m_##name;

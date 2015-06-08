@@ -5,19 +5,12 @@
 #include "config.h"
 #include "bindings/core/v8/V8HiddenValue.h"
 
-#include "bindings/core/v8/ScriptWrappable.h"
-#include "bindings/core/v8/V8Binding.h"
-
 namespace blink {
 
 #define V8_DEFINE_METHOD(name) \
 v8::Local<v8::String> V8HiddenValue::name(v8::Isolate* isolate)    \
 { \
-    V8HiddenValue* hiddenValue = V8PerIsolateData::from(isolate)->hiddenValue(); \
-    if (hiddenValue->m_##name.isEmpty()) { \
-        hiddenValue->m_##name.set(isolate, v8AtomicString(isolate, #name)); \
-    } \
-    return hiddenValue->m_##name.newLocal(isolate); \
+    return v8::String::NewFromUtf8(isolate, #name, v8::NewStringType::kInternalized).ToLocalChecked();\
 }
 
 V8_HIDDEN_VALUES(V8_DEFINE_METHOD);
@@ -35,12 +28,6 @@ bool V8HiddenValue::setHiddenValue(v8::Isolate* isolate, v8::Local<v8::Object> o
 bool V8HiddenValue::deleteHiddenValue(v8::Isolate* isolate, v8::Local<v8::Object> object, v8::Local<v8::String> key)
 {
     return object->DeleteHiddenValue(key);
-}
-
-v8::Local<v8::Value> V8HiddenValue::getHiddenValueFromMainWorldWrapper(v8::Isolate* isolate, ScriptWrappable* wrappable, v8::Local<v8::String> key)
-{
-    v8::Local<v8::Object> wrapper = wrappable->newLocalWrapper(isolate);
-    return wrapper.IsEmpty() ? v8::Local<v8::Value>() : getHiddenValue(isolate, wrapper, key);
 }
 
 } // namespace blink

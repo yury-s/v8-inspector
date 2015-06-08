@@ -361,8 +361,7 @@ bool V8Debugger::setScriptSource(const String& sourceID, const String& newConten
     case 0:
         {
             v8::Local<v8::Value> normalResult = resultTuple->Get(1);
-            NonThrowableExceptionState exceptionState;
-            RefPtr<JSONValue> jsonResult = ScriptValue::to<JSONValuePtr>(m_isolate, normalResult, exceptionState);
+            RefPtr<JSONValue> jsonResult = ScriptValue::v8ToJSONValue(normalResult, m_isolate);
             if (jsonResult)
                 *result = jsonResult->asObject();
             // Call stack may have changed after if the edited function was on the stack.

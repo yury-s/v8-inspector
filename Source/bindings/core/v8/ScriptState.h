@@ -97,7 +97,6 @@ public:
 
     bool evalEnabled() const;
     void setEvalEnabled(bool);
-    ScriptValue getFromGlobalObject(const char* name);
 
 protected:
     explicit ScriptState(v8::Local<v8::Context>);

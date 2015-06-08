@@ -64,7 +64,7 @@ bool ScriptValue::toString(String& result) const
     return true;
 }
 
-static PassRefPtr<JSONValue> v8ToJSONValue(v8::Handle<v8::Value> value, int maxDepth, v8::Isolate* isolate)
+static PassRefPtr<JSONValue> v8ToJSONValueInternal(v8::Handle<v8::Value> value, int maxDepth, v8::Isolate* isolate)
 {
     if (value.IsEmpty()) {
         ASSERT_NOT_REACHED();
@@ -89,7 +89,7 @@ static PassRefPtr<JSONValue> v8ToJSONValue(v8::Handle<v8::Value> value, int maxD
         uint32_t length = array->Length();
         for (uint32_t i = 0; i < length; i++) {
             v8::Local<v8::Value> value = array->Get(v8::Int32::New(isolate, i));
-            RefPtr<JSONValue> element = v8ToJSONValue(value, maxDepth, isolate);
+            RefPtr<JSONValue> element = v8ToJSONValueInternal(value, maxDepth, isolate);
             if (!element)
                 return nullptr;
             inspectorArray->pushValue(element);
@@ -106,11 +106,11 @@ static PassRefPtr<JSONValue> v8ToJSONValue(v8::Handle<v8::Value> value, int maxD
             // FIXME(yurys): v8::Object should support GetOwnPropertyNames
             if (name->IsString() && !object->HasRealNamedProperty(v8::Handle<v8::String>::Cast(name)))
                 continue;
-            RefPtr<JSONValue> propertyValue = v8ToJSONValue(object->Get(name), maxDepth, isolate);
+            RefPtr<JSONValue> propertyValue = v8ToJSONValueInternal(object->Get(name), maxDepth, isolate);
             if (!propertyValue)
                 return nullptr;
-            TOSTRING_DEFAULT(V8StringResource<TreatNullAsNullString>, nameString, name, nullptr);
-            jsonObject->setValue(nameString, propertyValue);
+            v8::Local<v8::String> nameString = name.As<v8::String>();
+            jsonObject->setValue(toCoreStringWithNullCheck(nameString), propertyValue);
         }
         return jsonObject;
     }
@@ -123,8 +123,14 @@ PassRefPtr<JSONValue> ScriptValue::toJSONValue(ScriptState* scriptState) const
     v8::HandleScope handleScope(scriptState->isolate());
     // v8::Object::GetPropertyNames() expects current context to be not null.
     v8::Context::Scope contextScope(scriptState->context());
-    return v8ToJSONValue(v8Value(), JSONValue::maxDepth, scriptState->isolate());
+    return v8ToJSONValueInternal(v8Value(), JSONValue::maxDepth, scriptState->isolate());
 }
+
+PassRefPtr<JSONValue> ScriptValue::v8ToJSONValue(v8::Handle<v8::Value> value, v8::Isolate* isolate)
+{
+    return v8ToJSONValueInternal(value, JSONValue::maxDepth, isolate);
+}
+
 
 ScriptValue ScriptValue::createNull(ScriptState* scriptState)
 {

@@ -175,6 +175,7 @@ public:
 
     bool toString(String&) const;
     PassRefPtr<JSONValue> toJSONValue(ScriptState*) const;
+    static PassRefPtr<JSONValue> v8ToJSONValue(v8::Handle<v8::Value> value, v8::Isolate* isolate);
 
     static ScriptValue createNull(ScriptState*);
 

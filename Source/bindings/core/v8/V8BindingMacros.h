@@ -31,6 +31,10 @@
 #ifndef V8BindingMacros_h
 #define V8BindingMacros_h
 
+
+#include "wtf/Assertions.h"
+#include <v8.h>
+
 namespace blink {
 
 // type is an instance of class template V8StringResource<>,

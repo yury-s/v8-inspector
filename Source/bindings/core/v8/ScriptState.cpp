@@ -5,8 +5,6 @@
 #include "config.h"
 #include "bindings/core/v8/ScriptState.h"
 
-#include "bindings/core/v8/V8Binding.h"
-
 namespace blink {
 
 PassRefPtr<ScriptState> ScriptState::create(v8::Local<v8::Context> context)
@@ -87,15 +85,6 @@ void ScriptState::setEvalEnabled(bool enabled)
 {
     v8::HandleScope handleScope(m_isolate);
     return context()->AllowCodeGenerationFromStrings(enabled);
-}
-
-ScriptValue ScriptState::getFromGlobalObject(const char* name)
-{
-    v8::HandleScope handleScope(m_isolate);
-    v8::Local<v8::Value> v8Value;
-    if (!context()->Global()->Get(context(), v8AtomicString(isolate(), name)).ToLocal(&v8Value))
-        return ScriptValue();
-    return ScriptValue(this, v8Value);
 }
 
 }
