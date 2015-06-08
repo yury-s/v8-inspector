@@ -196,40 +196,6 @@ v8::Local<v8::Context> V8PerIsolateData::ensureScriptRegexpContext()
     return m_scriptRegexpScriptState->context();
 }
 
-bool V8PerIsolateData::hasInstance(const WrapperTypeInfo* untrustedWrapperTypeInfo, v8::Local<v8::Value> value)
-{
-    return hasInstance(untrustedWrapperTypeInfo, value, m_domTemplateMapForMainWorld)
-        || hasInstance(untrustedWrapperTypeInfo, value, m_domTemplateMapForNonMainWorld);
-}
-
-bool V8PerIsolateData::hasInstance(const WrapperTypeInfo* untrustedWrapperTypeInfo, v8::Local<v8::Value> value, DOMTemplateMap& domTemplateMap)
-{
-    DOMTemplateMap::iterator result = domTemplateMap.find(untrustedWrapperTypeInfo);
-    if (result == domTemplateMap.end())
-        return false;
-    v8::Local<v8::FunctionTemplate> templ = result->value.Get(isolate());
-    return templ->HasInstance(value);
-}
-
-v8::Local<v8::Object> V8PerIsolateData::findInstanceInPrototypeChain(const WrapperTypeInfo* info, v8::Local<v8::Value> value)
-{
-    v8::Local<v8::Object> wrapper = findInstanceInPrototypeChain(info, value, m_domTemplateMapForMainWorld);
-    if (!wrapper.IsEmpty())
-        return wrapper;
-    return findInstanceInPrototypeChain(info, value, m_domTemplateMapForNonMainWorld);
-}
-
-v8::Local<v8::Object> V8PerIsolateData::findInstanceInPrototypeChain(const WrapperTypeInfo* info, v8::Local<v8::Value> value, DOMTemplateMap& domTemplateMap)
-{
-    if (value.IsEmpty() || !value->IsObject())
-        return v8::Local<v8::Object>();
-    DOMTemplateMap::iterator result = domTemplateMap.find(info);
-    if (result == domTemplateMap.end())
-        return v8::Local<v8::Object>();
-    v8::Local<v8::FunctionTemplate> templ = result->value.Get(isolate());
-    return v8::Local<v8::Object>::Cast(value)->FindInstanceInPrototypeChain(templ);
-}
-
 static void constructorOfToString(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
     // The DOM constructors' toString functions grab the current toString

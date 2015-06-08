@@ -29,7 +29,6 @@
 #include "bindings/core/v8/ScopedPersistent.h"
 #include "bindings/core/v8/ScriptState.h"
 #include "bindings/core/v8/V8HiddenValue.h"
-#include "bindings/core/v8/WrapperTypeInfo.h"
 #include "core/CoreExport.h"
 #include "core/inspector/ScriptDebuggerBase.h"
 #include "gin/public/isolate_holder.h"
@@ -44,7 +43,6 @@ namespace blink {
 class DOMDataStore;
 class StringCache;
 class V8Debugger;
-struct WrapperTypeInfo;
 
 typedef WTF::Vector<DOMDataStore*> DOMDataStoreList;
 
@@ -62,7 +60,8 @@ public:
     {
         ASSERT(isolate);
         ASSERT(isolate->GetData(gin::kEmbedderBlink));
-        return static_cast<V8PerIsolateData*>(isolate->GetData(gin::kEmbedderBlink));
+        // FIXME gin::kEmbedderBlink
+        return static_cast<V8PerIsolateData*>(isolate->GetData(1));
     }
 
     static void willBeDestroyed(v8::Isolate*);
@@ -102,9 +101,6 @@ public:
     v8::Local<v8::FunctionTemplate> existingDOMTemplate(const void* domTemplateKey);
     void setDOMTemplate(const void* domTemplateKey, v8::Local<v8::FunctionTemplate>);
 
-    bool hasInstance(const WrapperTypeInfo* untrusted, v8::Local<v8::Value>);
-    v8::Local<v8::Object> findInstanceInPrototypeChain(const WrapperTypeInfo*, v8::Local<v8::Value>);
-
     v8::Local<v8::Context> ensureScriptRegexpContext();
 
     const char* previousSamplingState() const { return m_previousSamplingState; }
@@ -126,8 +122,6 @@ private:
 
     typedef HashMap<const void*, v8::Eternal<v8::FunctionTemplate>> DOMTemplateMap;
     DOMTemplateMap& currentDOMTemplateMap();
-    bool hasInstance(const WrapperTypeInfo* untrusted, v8::Local<v8::Value>, DOMTemplateMap&);
-    v8::Local<v8::Object> findInstanceInPrototypeChain(const WrapperTypeInfo*, v8::Local<v8::Value>, DOMTemplateMap&);
 
     bool m_destructionPending;
     OwnPtr<gin::IsolateHolder> m_isolateHolder;
