@@ -31,7 +31,6 @@
 #ifndef ScriptValue_h
 #define ScriptValue_h
 
-#include "bindings/core/v8/NativeValueTraits.h"
 #include "bindings/core/v8/ScriptState.h"
 #include "bindings/core/v8/SharedPersistent.h"
 #include "core/CoreExport.h"
@@ -46,24 +45,6 @@ class JSONValue;
 
 class CORE_EXPORT ScriptValue final {
 public:
-    template<typename T>
-    static ScriptValue from(ScriptState* scriptState, T value)
-    {
-        return ScriptValue(scriptState, toV8(value, scriptState->context()->Global(), scriptState->isolate()));
-    }
-
-    template<typename T, typename... Arguments>
-    static inline T to(v8::Isolate* isolate, v8::Local<v8::Value> value, ExceptionState& exceptionState, Arguments const&... arguments)
-    {
-        return NativeValueTraits<T>::nativeValue(isolate, value, exceptionState, arguments...);
-    }
-
-    template<typename T, typename... Arguments>
-    static inline T to(v8::Isolate* isolate, const ScriptValue& value, ExceptionState& exceptionState, Arguments const&... arguments)
-    {
-        return to<T>(isolate, value.v8Value(), exceptionState, arguments...);
-    }
-
     ScriptValue() { }
 
     ScriptValue(ScriptState* scriptState, v8::Local<v8::Value> value)
