@@ -28,7 +28,6 @@
 
 #include "bindings/core/v8/ScopedPersistent.h"
 #include "bindings/core/v8/ScriptState.h"
-#include "bindings/core/v8/V8HiddenValue.h"
 #include "core/CoreExport.h"
 #include "core/inspector/ScriptDebuggerBase.h"
 #include "gin/public/isolate_holder.h"
@@ -95,8 +94,6 @@ public:
     int decrementInternalScriptRecursionLevel() { return --m_internalScriptRecursionLevel; }
 #endif
 
-    V8HiddenValue* hiddenValue() { return m_hiddenValue.get(); }
-
     v8::Local<v8::FunctionTemplate> domTemplate(const void* domTemplateKey, v8::FunctionCallback = 0, v8::Local<v8::Value> data = v8::Local<v8::Value>(), v8::Local<v8::Signature> = v8::Local<v8::Signature>(), int length = 0);
     v8::Local<v8::FunctionTemplate> existingDOMTemplate(const void* domTemplateKey);
     void setDOMTemplate(const void* domTemplateKey, v8::Local<v8::FunctionTemplate>);
@@ -129,7 +126,6 @@ private:
     DOMTemplateMap m_domTemplateMapForNonMainWorld;
     ScopedPersistent<v8::FunctionTemplate> m_toStringTemplate;
     OwnPtr<StringCache> m_stringCache;
-    OwnPtr<V8HiddenValue> m_hiddenValue;
     ScopedPersistent<v8::Value> m_liveRoot;
     RefPtr<ScriptState> m_scriptRegexpScriptState;
 

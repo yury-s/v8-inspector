@@ -87,9 +87,6 @@
         '../bindings/core/v8/ScriptValue.h',
         '../bindings/core/v8/SharedPersistent.h',
 
-        '../bindings/core/v8/V8HiddenValue.cpp',
-        '../bindings/core/v8/V8HiddenValue.h',
-
         '../bindings/core/v8/V8Debugger.cpp',
         '../bindings/core/v8/V8Debugger.h',
         '../bindings/core/v8/WorkerThreadDebugger.cpp',

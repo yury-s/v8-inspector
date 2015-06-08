@@ -29,7 +29,6 @@
 #include "bindings/core/v8/DOMDataStore.h"
 #include "bindings/core/v8/ScriptSourceCode.h"
 #include "bindings/core/v8/V8Binding.h"
-#include "bindings/core/v8/V8HiddenValue.h"
 #include "bindings/core/v8/V8ObjectConstructor.h"
 #include "bindings/core/v8/V8RecursionScope.h"
 #include "bindings/core/v8/V8ScriptRunner.h"
@@ -77,7 +76,6 @@ V8PerIsolateData::V8PerIsolateData()
     : m_destructionPending(false)
     , m_isolateHolder(adoptPtr(new gin::IsolateHolder()))
     , m_stringCache(adoptPtr(new StringCache(isolate())))
-    , m_hiddenValue(adoptPtr(new V8HiddenValue()))
     , m_constructorMode(ConstructorMode::CreateNewObject)
     , m_recursionLevel(0)
     , m_isHandlingRecursionLevelError(false)
