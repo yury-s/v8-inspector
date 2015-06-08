@@ -5,7 +5,6 @@
 #include "config.h"
 #include "bindings/core/v8/inspector/V8InjectedScriptHost.h"
 
-#include "bindings/core/v8/ExceptionState.h"
 #include "bindings/core/v8/ScriptValue.h"
 #include "bindings/core/v8/V8Binding.h"
 #include "bindings/core/v8/V8Debugger.h"
@@ -33,7 +32,6 @@ void V8InjectedScriptHost::inspectedObjectCallback(const v8::FunctionCallbackInf
         return;
 
     if (!info[0]->IsInt32()) {
-        V8ThrowException::throwTypeError(info.GetIsolate(), "argument has to be an integer");
         return;
     }
 

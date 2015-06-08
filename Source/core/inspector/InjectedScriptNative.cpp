@@ -6,7 +6,6 @@
 
 #include "core/inspector/InjectedScriptNative.h"
 
-#include "bindings/core/v8/V8HiddenValue.h"
 #include "platform/JSONValues.h"
 #include "wtf/Vector.h"
 #include "wtf/text/WTFString.h"
@@ -22,18 +21,23 @@ InjectedScriptNative::InjectedScriptNative(v8::Isolate* isolate)
 
 InjectedScriptNative::~InjectedScriptNative() { }
 
+static v8::Local<v8::String> hiddenPropertyName(v8::Isolate* isolate)
+{
+    return v8::String::NewFromUtf8(isolate, "v8inspector::InjectedScriptNative", v8::NewStringType::kInternalized).ToLocalChecked();
+}
+
 void InjectedScriptNative::setOnInjectedScriptHost(v8::Local<v8::Object> injectedScriptHost)
 {
     v8::HandleScope handleScope(m_isolate);
     v8::Local<v8::External> external = v8::External::New(m_isolate, this);
-    V8HiddenValue::setHiddenValue(m_isolate, injectedScriptHost, V8HiddenValue::injectedScriptNative(m_isolate), external);
+    injectedScriptHost->SetHiddenValue(hiddenPropertyName(m_isolate), external);
 }
 
 InjectedScriptNative* InjectedScriptNative::fromInjectedScriptHost(v8::Local<v8::Object> injectedScriptObject)
 {
     v8::Isolate* isolate = injectedScriptObject->GetIsolate();
     v8::HandleScope handleScope(isolate);
-    v8::Local<v8::Value> value = V8HiddenValue::getHiddenValue(isolate, injectedScriptObject, V8HiddenValue::injectedScriptNative(isolate));
+    v8::Local<v8::Value> value = injectedScriptObject->GetHiddenValue(hiddenPropertyName(isolate));
     ASSERT(!value.IsEmpty());
     v8::Local<v8::External> external = value.As<v8::External>();
     void* ptr = external->Value();
