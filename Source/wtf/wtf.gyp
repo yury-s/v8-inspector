@@ -116,9 +116,6 @@
           'sources/': [
             ['exclude', 'ThreadingPthreads\\.cpp$'],
           ],
-          'include_dirs!': [
-            '<(SHARED_INTERMEDIATE_DIR)/blink',
-          ],
           'conditions': [
             ['component=="shared_library"', {
               # Chromium windows multi-dll build enables C++ exception and this

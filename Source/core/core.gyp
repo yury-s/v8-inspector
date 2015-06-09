@@ -40,7 +40,6 @@
 
     'webcore_include_dirs': [
       '..',  # WebKit/Source
-      '<(SHARED_INTERMEDIATE_DIR)/blink',  # gen/blink
     ],
   },  # variables
 
@@ -60,8 +59,6 @@
         '<(DEPTH)/url/url.gyp:url_lib', # this one is required due to ScriptStreamer.h
 
         # Exported.
-        # 'webcore_generated',
-        #'../platform/blink_platform.gyp:blink_platform',
         '../wtf/wtf.gyp:wtf',
         '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
       ],

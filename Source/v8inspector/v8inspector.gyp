@@ -23,7 +23,6 @@
             ],
             'include_dirs': [
                 '..',  # WebKit/Source
-                '<(SHARED_INTERMEDIATE_DIR)/blink',  # gen/blink for InspectorBackendDispatcher
             ],
             'defines': [
                 'INSIDE_BLINK',
