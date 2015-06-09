@@ -4,10 +4,6 @@
 
 {
     'includes': [
-        '../build/features.gypi',
-        '../build/scripts/scripts.gypi',
-        '../core/core.gypi',
-#        '../platform/blink_platform.gypi',
         '../wtf/wtf.gypi',
     ],
     'targets': [
