@@ -19,7 +19,7 @@ public:
     v8::Local<v8::Object> compileDebuggerScript() override;
     V8Debugger* debugger() const { return m_debugger.get(); }
 
-    DECLARE_VIRTUAL_TRACE();
+    static String loadFromFile(const char* name);
 
 private:
     v8::Isolate* m_isolate;

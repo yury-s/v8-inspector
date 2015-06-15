@@ -36,6 +36,7 @@
 #include "core/inspector/InjectedScriptHost.h"
 #include "core/inspector/InjectedScriptNative.h"
 #include "core/inspector/JSONParser.h"
+#include "core/inspector/ScriptDebuggerBase.h"
 #include "platform/JSONValues.h"
 #include "wtf/PassOwnPtr.h"
 
@@ -158,7 +159,9 @@ void InjectedScriptManager::setCustomObjectFormatterEnabled(bool enabled)
 String InjectedScriptManager::injectedScriptSource()
 {
     // FIXME load InjectedScriptSource.js
-    return String("InjectedScriptSource.js");
+    const char* absolutePath = "/sources/v8inspector/src/third_party/WebKit/Source/core/inspector/InjectedScriptSource.js";
+    fprintf(stderr, "Loaded injected script source from %s\n", absolutePath);
+    return ScriptDebuggerBase::loadFromFile(absolutePath);
 }
 
 InjectedScript InjectedScriptManager::injectedScriptFor(ScriptState* inspectedScriptState)

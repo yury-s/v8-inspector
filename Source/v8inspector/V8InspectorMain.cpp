@@ -85,8 +85,10 @@ int main(int argc, char* argv[]) {
 
     // Must be in context when constructing V8Inspector.
     ScriptState::create(context);
-    OwnPtr<V8Inspector> agent = adoptPtr(new V8Inspector(isolate));
-    fprintf(stderr, "V8 inspector is running %p.\n", &agent);
+    OwnPtr<V8Inspector> inspector = adoptPtr(new V8Inspector(isolate));
+    fprintf(stderr, "V8 inspector is running\n");
+    inspector->connectFrontend();
+    inspector->dispatchMessageFromFrontend("{\"id\":27,\"method\":\"Debugger.enable\"}");
 
     result = RunMain(isolate, argc, argv);
     if (run_shell) RunShell(context);
