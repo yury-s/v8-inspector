@@ -38,6 +38,7 @@
 #include "core/inspector/JSONParser.h"
 #include "platform/JSONValues.h"
 #include "wtf/text/WTFString.h"
+#include "wtf/text/StringBuilder.h"
 
 using blink::TypeBuilder::Array;
 using blink::TypeBuilder::Debugger::CallFrame;

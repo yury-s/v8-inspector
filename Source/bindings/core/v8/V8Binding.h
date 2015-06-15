@@ -123,7 +123,8 @@ inline void v8SetReturnValueEmptyString(const CallbackInfo& info)
 // point to avoid repeated conversions.
 inline String toCoreString(v8::Local<v8::String> value)
 {
-    return String("FIXME");
+    v8::String::Utf8Value utf8(value);
+    return String(*utf8, utf8.length());
 }
 
 inline String toCoreStringWithNullCheck(v8::Local<v8::String> value)

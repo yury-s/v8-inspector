@@ -20,7 +20,6 @@ String ScriptDebuggerBase::loadFromFile(const char* name)
 
   fseek(file, 0, SEEK_END);
   size_t size = ftell(file);
-  fprintf(stderr, "File size (%s) = %lu", name, size);
   rewind(file);
 
   OwnPtr<char[]> arrayHolder = adoptArrayPtr(new char[size + 1]);
@@ -50,7 +49,6 @@ ScriptDebuggerBase::~ScriptDebuggerBase()
 
 v8::Local<v8::Object> ScriptDebuggerBase::compileDebuggerScript()
 {
-    fprintf(stderr, "ScriptDebuggerBase::compileDebuggerScript() not implemented load of DebuggerScriptSource.js\n");
     const char* absolutePath = "/sources/v8inspector/src/third_party/WebKit/Source/bindings/core/v8/DebuggerScript.js";
     String debuggerScript = ScriptDebuggerBase::loadFromFile(absolutePath);
     fprintf(stderr, "Loaded debugger script from %s\n", absolutePath);
