@@ -55,15 +55,14 @@ public:
     ~InjectedScriptHostClientImpl() override { }
 };
 
-V8Inspector::V8Inspector()
+V8Inspector::V8Inspector(v8::Isolate* isolate)
     : m_stateClient(adoptPtr(new StateClientImpl()))
     , m_state(adoptPtrWillBeNoop(new InspectorCompositeState(m_stateClient.get())))
     , m_injectedScriptManager(InjectedScriptManager::createForWorker())
-    , m_workerThreadDebugger(WorkerThreadDebugger::create())
+    , m_workerThreadDebugger(WorkerThreadDebugger::create(isolate))
     , m_agents(m_state.get())
     , m_paused(false)
 {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
     ScriptState* scriptState = ScriptState::current(isolate);
 
     OwnPtrWillBeRawPtr<WorkerRuntimeAgent> workerRuntimeAgent = WorkerRuntimeAgent::create(m_injectedScriptManager.get(), m_workerThreadDebugger->debugger(), nullptr, this);

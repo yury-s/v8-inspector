@@ -40,8 +40,8 @@ namespace blink {
 
 static const char* workerContextDebugId = "[worker]";
 
-WorkerThreadDebugger::WorkerThreadDebugger()
-    : ScriptDebuggerBase(v8::Isolate::GetCurrent(), V8Debugger::create(v8::Isolate::GetCurrent(), this))
+WorkerThreadDebugger::WorkerThreadDebugger(v8::Isolate* isolate)
+    : ScriptDebuggerBase(isolate, V8Debugger::create(isolate, this))
     , m_listener(nullptr)
 {
 }

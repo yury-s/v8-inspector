@@ -4,9 +4,11 @@
 
 #include "config.h"
 
+#include "bindings/core/v8/ScriptState.h"
 #include "v8inspector/V8Inspector.h"
-#include <include/v8.h>
+#include "wtf/OwnPtr.h"
 
+#include <include/v8.h>
 #include <include/libplatform/libplatform.h>
 
 #include <assert.h>
@@ -69,9 +71,7 @@ int main(int argc, char* argv[]) {
   v8::Isolate* isolate = v8::Isolate::New(create_params);
   run_shell = (argc == 1);
 
-//   V8Inspector* agent = new V8Inspector();
-//   fprintf(stderr, "V8 inspector is running %p.\n", &agent);
-
+  fprintf(stderr, "main 10\n");
   int result;
   {
     v8::Isolate::Scope isolate_scope(isolate);
@@ -82,6 +82,12 @@ int main(int argc, char* argv[]) {
       return 1;
     }
     v8::Context::Scope context_scope(context);
+
+    // Must be in context when constructing V8Inspector.
+    ScriptState::create(context);
+    OwnPtr<V8Inspector> agent = adoptPtr(new V8Inspector(isolate));
+    fprintf(stderr, "V8 inspector is running %p.\n", &agent);
+
     result = RunMain(isolate, argc, argv);
     if (run_shell) RunShell(context);
   }

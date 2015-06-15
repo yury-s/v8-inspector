@@ -43,9 +43,9 @@ class WorkerThreadDebugger final : public NoBaseWillBeGarbageCollectedFinalized<
     WTF_MAKE_NONCOPYABLE(WorkerThreadDebugger);
     WILL_BE_USING_GARBAGE_COLLECTED_MIXIN(WorkerThreadDebugger);
 public:
-    static PassOwnPtrWillBeRawPtr<WorkerThreadDebugger> create()
+    static PassOwnPtrWillBeRawPtr<WorkerThreadDebugger> create(v8::Isolate* isolate)
     {
-        return adoptPtrWillBeNoop(new WorkerThreadDebugger());
+        return adoptPtrWillBeNoop(new WorkerThreadDebugger(isolate));
     }
 
     ~WorkerThreadDebugger() override;
@@ -55,7 +55,7 @@ public:
     void removeListener(ScriptDebugListener*);
 
 private:
-    explicit WorkerThreadDebugger();
+    explicit WorkerThreadDebugger(v8::Isolate*);
 
     ScriptDebugListener* getDebugListenerForContext(v8::Local<v8::Context>);
     void runMessageLoopOnPause(v8::Local<v8::Context>);

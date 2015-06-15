@@ -23,10 +23,10 @@ class WorkerDebuggerAgent;
 class WorkerRuntimeAgent;
 class WorkerThreadDebugger;
 
-class V8Inspector : public RefCounted<V8Inspector>, public InspectorRuntimeAgent::Client {
+class V8Inspector : public InspectorRuntimeAgent::Client {
     WTF_MAKE_NONCOPYABLE(V8Inspector);
 public:
-    explicit V8Inspector();
+    explicit V8Inspector(v8::Isolate*);
     ~V8Inspector();
     DECLARE_TRACE();
 
