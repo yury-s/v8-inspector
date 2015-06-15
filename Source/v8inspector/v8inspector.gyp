@@ -15,6 +15,7 @@
                 '../core/core.gyp:webcore_v8inspector',
                 '../wtf/wtf.gyp:wtf',
                 '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
+                '<(DEPTH)/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
             ],
             'sources': [
                 'V8InspectorMain.cpp',
@@ -23,6 +24,7 @@
             ],
             'include_dirs': [
                 '..',  # WebKit/Source
+                '<(DEPTH)/v8', # for include/v8-platform.h in include/libplatform/libplatform.h
             ],
             'defines': [
                 'INSIDE_BLINK',

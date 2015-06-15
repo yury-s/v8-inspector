@@ -58,7 +58,7 @@ public:
     static V8PerIsolateData* from(v8::Isolate* isolate)
     {
         ASSERT(isolate);
-        ASSERT(isolate->GetData(gin::kEmbedderBlink));
+        ASSERT(isolate->GetData(1));
         // FIXME gin::kEmbedderBlink
         return static_cast<V8PerIsolateData*>(isolate->GetData(1));
     }
