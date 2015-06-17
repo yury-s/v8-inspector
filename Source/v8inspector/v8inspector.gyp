@@ -22,6 +22,16 @@
                 'remote_debugging_server.cc',
                 'remote_debugging_server.h',
 
+                'StreamSocketImpl.cpp',
+                'StreamSocketImpl.h',
+
+                'ServerSocketImpl.cpp',
+                'ServerSocketImpl.h',
+
+
+                'InspectorMessageLoop.cpp',
+                'InspectorMessageLoop.h',
+
                 'V8InspectorMain.cpp',
                 'V8Inspector.cpp',
                 'V8Inspector.h',

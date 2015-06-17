@@ -4,9 +4,11 @@
 
 #include "v8inspector/remote_debugging_server.h"
 
+#include "base/run_loop.h"
 #include "net/base/net_errors.h"
 #include "net/server/http_server.h"
 #include "net/socket/tcp_server_socket.h"
+#include "v8inspector/ServerSocketImpl.h"
 
 namespace net {
 
@@ -100,39 +102,37 @@ void ServerWrapper::Close(int connection_id) {
 
 
 void ServerWrapper::OnHttpRequest(int connection_id, const net::HttpServerRequestInfo& info) {
+    fprintf(stderr, "ServerWrapper::OnHttpRequest\n");
 }
 
 void ServerWrapper::OnWebSocketRequest(int connection_id, const net::HttpServerRequestInfo& info) {
-
+    fprintf(stderr, "ServerWrapper::OnWebSocketRequest\n");
 }
 
 void ServerWrapper::OnWebSocketMessage(int connection_id, const std::string& data) {
+    fprintf(stderr, "ServerWrapper::OnWebSocketMessage\n");
 }
 
 void ServerWrapper::OnClose(int connection_id) {
+    fprintf(stderr, "ServerWrapper::OnClose\n");
 }
 
 }
 
 void* RemoteDebuggingServer::createServer()
 {
-    scoped_ptr<net::ServerSocket> server_socket(
-        new net::TCPServerSocket(nullptr, net::NetLog::Source()));
+    scoped_ptr<net::ServerSocket> server_socket(new ServerSocketImpl());
     fprintf(stderr, "createServer 1\n");
     if (server_socket->ListenWithAddressAndPort("127.0.0.1", 9223, 10) != net::OK) {
-    fprintf(stderr, "createServer 2\n");
+      fprintf(stderr, "createServer 2\n");
       return nullptr;
     }
-    scoped_ptr<net::IPEndPoint> ip_address(new net::IPEndPoint);
     fprintf(stderr, "createServer 3\n");
     ServerWrapper* server_wrapper = new ServerWrapper(server_socket.Pass());
-    fprintf(stderr, "createServer 4\n");
-    if (server_wrapper->GetLocalAddress(ip_address.get()) != net::OK) {
-      fprintf(stderr, "createServer 5\n");
-      ip_address.reset();
-    }
     fprintf(stderr, "createServer 6\n");
-    return nullptr;
+
+
+    return server_wrapper;
 }
 
 }  // namespace net

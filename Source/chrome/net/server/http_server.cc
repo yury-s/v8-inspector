@@ -35,9 +35,10 @@ HttpServer::HttpServer(scoped_ptr<ServerSocket> server_socket,
   DCHECK(server_socket_);
   // Start accepting connections in next run loop in case when delegate is not
   // ready to get callbacks.
-  base::MessageLoopProxy::current()->PostTask(
-      FROM_HERE,
-      base::Bind(&HttpServer::DoAcceptLoop, weak_ptr_factory_.GetWeakPtr()));
+//   base::MessageLoopProxy::current()->PostTask(
+//       FROM_HERE,
+//       base::Bind(&HttpServer::DoAcceptLoop, weak_ptr_factory_.GetWeakPtr()));
+  DoAcceptLoop();
 }
 
 HttpServer::~HttpServer() {
@@ -137,6 +138,7 @@ void HttpServer::SetSendBufferSize(int connection_id, int32 size) {
 void HttpServer::DoAcceptLoop() {
   int rv;
   do {
+    fprintf(stderr, "HttpServer::DoAcceptLoop\n");
     rv = server_socket_->Accept(&accepted_socket_,
                                 base::Bind(&HttpServer::OnAcceptCompleted,
                                            weak_ptr_factory_.GetWeakPtr()));

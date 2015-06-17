@@ -402,6 +402,9 @@ class BASE_EXPORT MessageLoop : public MessagePump::Delegate {
   // Runs the specified PendingTask.
   void RunTask(const PendingTask& pending_task);
 
+  // Configure various members and bind this message loop to the current thread.
+  void BindToCurrentThread();
+
   //----------------------------------------------------------------------------
  protected:
   scoped_ptr<MessagePump> pump_;
@@ -432,9 +435,6 @@ class BASE_EXPORT MessageLoop : public MessagePump::Delegate {
   // Common private constructor. Other constructors delegate the initialization
   // to this constructor.
   MessageLoop(Type type, MessagePumpFactoryCallback pump_factory);
-
-  // Configure various members and bind this message loop to the current thread.
-  void BindToCurrentThread();
 
   // Invokes the actual run loop using the message pump.
   void RunHandler();
