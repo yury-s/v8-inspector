@@ -6,6 +6,7 @@
 
 #include "bindings/core/v8/ScriptState.h"
 #include "v8inspector/V8Inspector.h"
+#include "v8inspector/remote_debugging_server.h"
 #include "wtf/OwnPtr.h"
 
 #include <include/v8.h>
@@ -87,6 +88,10 @@ int main(int argc, char* argv[]) {
     ScriptState::create(context);
     OwnPtr<V8Inspector> inspector = adoptPtr(new V8Inspector(isolate));
     fprintf(stderr, "V8 inspector is running\n");
+    //net::ServerWrapper* wrapper = 
+    net::RemoteDebuggingServer::createServer();
+
+
     inspector->connectFrontend();
     inspector->dispatchMessageFromFrontend("{\"id\":27,\"method\":\"Debugger.enable\"}");
 

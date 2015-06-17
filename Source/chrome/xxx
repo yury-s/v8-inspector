@@ -1,0 +1,160 @@
+diff --git a/Source/v8inspector/V8Inspector.cpp b/Source/v8inspector/V8Inspector.cpp
+index fba45b0..826bc1b 100644
+--- a/Source/v8inspector/V8Inspector.cpp
++++ b/Source/v8inspector/V8Inspector.cpp
+@@ -29,10 +29,12 @@ private:
+     virtual void sendProtocolResponse(int callId, PassRefPtr<JSONObject> message) override
+     {
+         printf("ChannelImpl::sendProtocolResponse \n");
++//         printf("ChannelImpl::sendProtocolResponse callId = %d message = %s\n", callId, message->toPrettyJSONString().utf8().data());
+     }
+     virtual void sendProtocolNotification(PassRefPtr<JSONObject> message) override
+     {
+         printf("ChannelImpl::sendProtocolNotification \n");
++//         printf("ChannelImpl::sendProtocolNotification message = %s\n", message->toPrettyJSONString().utf8().data());
+     }
+     virtual void flush() override { }
+ };
+diff --git a/Source/v8inspector/V8InspectorMain.cpp b/Source/v8inspector/V8InspectorMain.cpp
+index 4924fba..7882150 100644
+--- a/Source/v8inspector/V8InspectorMain.cpp
++++ b/Source/v8inspector/V8InspectorMain.cpp
+@@ -6,6 +6,7 @@
+ 
+ #include "bindings/core/v8/ScriptState.h"
+ #include "v8inspector/V8Inspector.h"
++#include "v8inspector/remote_debugging_server.h"
+ #include "wtf/OwnPtr.h"
+ 
+ #include <include/v8.h>
+@@ -87,6 +88,10 @@ int main(int argc, char* argv[]) {
+     ScriptState::create(context);
+     OwnPtr<V8Inspector> inspector = adoptPtr(new V8Inspector(isolate));
+     fprintf(stderr, "V8 inspector is running\n");
++    //net::ServerWrapper* wrapper = 
++    net::RemoteDebuggingServer::createServer();
++
++
+     inspector->connectFrontend();
+     inspector->dispatchMessageFromFrontend("{\"id\":27,\"method\":\"Debugger.enable\"}");
+ 
+diff --git a/Source/v8inspector/v8inspector.gyp b/Source/v8inspector/v8inspector.gyp
+index 399e5f7..5e710c9 100644
+--- a/Source/v8inspector/v8inspector.gyp
++++ b/Source/v8inspector/v8inspector.gyp
+@@ -11,6 +11,7 @@
+             'target_name': 'v8inspector_main',
+             'type': 'executable',
+             'dependencies': [
++                'http_server',
+                 '../config.gyp:config',
+                 '../core/core.gyp:webcore_v8inspector',
+                 '../wtf/wtf.gyp:wtf',
+@@ -18,12 +19,16 @@
+                 '<(DEPTH)/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
+             ],
+             'sources': [
++                'remote_debugging_server.cc',
++                'remote_debugging_server.h',
++
+                 'V8InspectorMain.cpp',
+                 'V8Inspector.cpp',
+                 'V8Inspector.h',
+             ],
+             'include_dirs': [
+                 '..',  # WebKit/Source
++                '../chrome',  # WebKit/Source/chrome
+                 '<(DEPTH)/v8', # for include/v8-platform.h in include/libplatform/libplatform.h
+             ],
+             'defines': [
+@@ -31,5 +36,90 @@
+             ],
+         },
+ 
++        {
++          'target_name': 'http_server',
++          'type': 'static_library',
++          'variables': { 'enable_wexit_time_destructors': 1, },
++          'dependencies': [
++#            '../chrome/url/url.gyp:url_lib',
++            '../chrome/third_party/zlib/zlib.gyp:zlib',
++          ],
++          'sources': [
++            '../chrome/net/server/http_connection.cc',
++            '../chrome/net/server/http_connection.h',
++            '../chrome/net/server/http_server.cc',
++            '../chrome/net/server/http_server.h',
++            '../chrome/net/server/http_server_request_info.cc',
++            '../chrome/net/server/http_server_request_info.h',
++            '../chrome/net/server/http_server_response_info.cc',
++            '../chrome/net/server/http_server_response_info.h',
++            '../chrome/net/server/web_socket.cc',
++            '../chrome/net/server/web_socket.h',
++            '../chrome/net/server/web_socket_encoder.cc',
++            '../chrome/net/server/web_socket_encoder.h',
++
++            '../chrome/net/socket/stream_socket.cc',
++            '../chrome/net/socket/stream_socket.h',
++            '../chrome/net/socket/tcp_client_socket.cc',
++            '../chrome/net/socket/tcp_client_socket.h',
++            '../chrome/net/socket/tcp_server_socket.cc',
++            '../chrome/net/socket/tcp_server_socket.h',
++            '../chrome/net/socket/tcp_socket.h',
++            '../chrome/net/socket/tcp_socket_libevent.cc',
++            '../chrome/net/socket/tcp_socket_libevent.h',
++
++            '../chrome/net/websockets/websocket_deflater.cc',
++            '../chrome/net/websockets/websocket_deflater.h',
++            '../chrome/net/websockets/websocket_inflater.cc',
++            '../chrome/net/websockets/websocket_inflater.h',
++            '../chrome/net/websockets/websocket_extension.cc',
++            '../chrome/net/websockets/websocket_extension.h',
++            '../chrome/net/websockets/websocket_extension_parser.cc',
++            '../chrome/net/websockets/websocket_extension_parser.h',
++
++
++            '../chrome/net/base/address_list.cc',
++            '../chrome/net/base/address_list.h',
++            '../chrome/net/base/io_buffer.cc',
++            '../chrome/net/base/io_buffer.h',
++            '../chrome/net/base/ip_endpoint.cc',
++            '../chrome/net/base/ip_endpoint.h',
++            '../chrome/net/base/net_util.cc',
++            '../chrome/net/base/net_util.h',
++
++            '../chrome/net/http/http_status_code.cc',
++            '../chrome/net/http/http_status_code.h',
++            '../chrome/net/http/http_request_headers.cc',
++            '../chrome/net/http/http_request_headers.h',
++
++            '../chrome/net/log/net_log.cc',
++            '../chrome/net/log/net_log.h',
++            '../chrome/net/log/net_log_capture_mode.cc',
++            '../chrome/net/log/net_log_capture_mode.h',
++
++            '../chrome/net/socket/socket_libevent.cc',
++            '../chrome/net/socket/socket_libevent.h',
++            '../chrome/net/socket/socket_descriptor.cc',
++            '../chrome/net/socket/socket_descriptor.h',
++            '../chrome/net/socket/socket_net_log_params.cc',
++            '../chrome/net/socket/socket_net_log_params.h',
++            '../chrome/net/base/connection_type_histograms.cc',
++            '../chrome/net/base/connection_type_histograms.h',
++            '../chrome/net/base/net_errors_posix.cc',
++            '../chrome/net/base/net_errors.h',
++            '../chrome/net/base/network_activity_monitor.cc',
++            '../chrome/net/base/network_activity_monitor.h',
++            '../chrome/net/base/network_change_notifier.cc',
++            '../chrome/net/base/network_change_notifier.h',
++            '../chrome/net/socket/server_socket.cc',
++            '../chrome/net/socket/server_socket.h',
++          ],
++          'include_dirs': [
++            '../chrome',  # WebKit/Source/chrome
++          ],
++          # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
++          'msvs_disabled_warnings': [4267, ],
++        },
++
+     ],
+ }

@@ -29,10 +29,12 @@ private:
     virtual void sendProtocolResponse(int callId, PassRefPtr<JSONObject> message) override
     {
         printf("ChannelImpl::sendProtocolResponse \n");
+//         printf("ChannelImpl::sendProtocolResponse callId = %d message = %s\n", callId, message->toPrettyJSONString().utf8().data());
     }
     virtual void sendProtocolNotification(PassRefPtr<JSONObject> message) override
     {
         printf("ChannelImpl::sendProtocolNotification \n");
+//         printf("ChannelImpl::sendProtocolNotification message = %s\n", message->toPrettyJSONString().utf8().data());
     }
     virtual void flush() override { }
 };
