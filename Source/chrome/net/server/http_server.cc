@@ -8,7 +8,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop_proxy.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -23,6 +22,7 @@
 #include "net/socket/server_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
+#include "v8inspector/InspectorMessageLoop.h"
 
 namespace net {
 
@@ -38,10 +38,11 @@ HttpServer::HttpServer(scoped_ptr<ServerSocket> server_socket,
 //   base::MessageLoopProxy::current()->PostTask(
 //       FROM_HERE,
 //       base::Bind(&HttpServer::DoAcceptLoop, weak_ptr_factory_.GetWeakPtr()));
-  DoAcceptLoop();
+  InspectorMessageLoop::current()->postTask(base::Bind(&HttpServer::DoAcceptLoop, weak_ptr_factory_.GetWeakPtr()));
 }
 
 HttpServer::~HttpServer() {
+  fprintf(stderr, "*** ~HttpServer\n");
   STLDeleteContainerPairSecondPointers(
       id_to_connection_.begin(), id_to_connection_.end());
 }
@@ -116,7 +117,8 @@ void HttpServer::Close(int connection_id) {
   // connection. Instead of referencing connection with ID all the time,
   // destroys the connection in next run loop to make sure any pending
   // callbacks in the call stack return.
-  base::MessageLoopProxy::current()->DeleteSoon(FROM_HERE, connection);
+//  base::MessageLoopProxy::current()->DeleteSoon(FROM_HERE, connection);
+fprintf(stderr, "HttpServer::Close TODO: DeleteSoon\n");
 }
 
 int HttpServer::GetLocalAddress(IPEndPoint* address) {
@@ -162,6 +164,7 @@ int HttpServer::HandleAcceptResult(int rv) {
   HttpConnection* connection =
       new HttpConnection(++last_id_, accepted_socket_.Pass());
   id_to_connection_[connection->id()] = connection;
+  fprintf(stderr, "HttpServer::HandleAcceptResult %p id = %d size = %lu\n", this, connection->id(), id_to_connection_.size());
   delegate_->OnConnect(connection->id());
   if (!HasClosedConnection(connection))
     DoReadLoop(connection);
@@ -207,6 +210,7 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
   HttpConnection::ReadIOBuffer* read_buf = connection->read_buf();
   read_buf->DidRead(rv);
 
+  fprintf(stderr, "HttpServer::HandleReadResult %d\n", rv);
   // Handles http requests or websocket messages.
   while (read_buf->GetSize() > 0) {
     if (connection->web_socket()) {
@@ -264,6 +268,7 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
         return ERR_CONNECTION_CLOSED;
       }
 
+      fprintf(stderr, "HttpServer::HandleReadResult size = %d\n", read_buf->GetSize() - pos);
       if (read_buf->GetSize() - pos < content_length)
         break;  // Not enough data was received yet.
       request.data.assign(read_buf->StartOfBuffer() + pos, content_length);
@@ -271,11 +276,13 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
     }
 
     read_buf->DidConsume(pos);
+   fprintf(stderr, "HttpServer::HandleReadResult OnHttpRequest\n");
     delegate_->OnHttpRequest(connection->id(), request);
     if (HasClosedConnection(connection))
       return ERR_CONNECTION_CLOSED;
   }
 
+  fprintf(stderr, "HttpServer::HandleReadResult OK %d\n", rv);
   return OK;
 }
 

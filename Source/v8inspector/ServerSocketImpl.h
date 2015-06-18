@@ -6,6 +6,8 @@
 #define ServerSocketImpl_h
 
 #include "net/socket/server_socket.h"
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 namespace net {
 
@@ -26,6 +28,10 @@ class ServerSocketImpl : public ServerSocket {
   int Accept(scoped_ptr<StreamSocket>* socket, const CompletionCallback& callback) override;
 
  private:
+  void init();
+
+  int socket_desc_;
+
   DISALLOW_COPY_AND_ASSIGN(ServerSocketImpl);
 };
 

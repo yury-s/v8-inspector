@@ -6,6 +6,8 @@
 
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_info.h"
+#include "net/server/http_server_request_info.h"
 #include "net/server/http_server.h"
 #include "net/socket/tcp_server_socket.h"
 #include "v8inspector/ServerSocketImpl.h"
@@ -58,6 +60,7 @@ class ServerWrapper : net::HttpServer::Delegate {
 
 ServerWrapper::ServerWrapper(scoped_ptr<net::ServerSocket> socket)
     : server_(new net::HttpServer(socket.Pass(), this)) {
+  fprintf(stderr, "ServerWrapper server_ = %p\n", server_.get());
 }
 
 int ServerWrapper::GetLocalAddress(net::IPEndPoint* address) {
@@ -102,7 +105,8 @@ void ServerWrapper::Close(int connection_id) {
 
 
 void ServerWrapper::OnHttpRequest(int connection_id, const net::HttpServerRequestInfo& info) {
-    fprintf(stderr, "ServerWrapper::OnHttpRequest\n");
+    fprintf(stderr, "ServerWrapper::OnHttpRequest %s %s\n", info.method.data(), info.path.data());
+    Send200(connection_id, "Hello!", "text/plain");
 }
 
 void ServerWrapper::OnWebSocketRequest(int connection_id, const net::HttpServerRequestInfo& info) {
@@ -122,16 +126,11 @@ void ServerWrapper::OnClose(int connection_id) {
 void* RemoteDebuggingServer::createServer()
 {
     scoped_ptr<net::ServerSocket> server_socket(new ServerSocketImpl());
-    fprintf(stderr, "createServer 1\n");
     if (server_socket->ListenWithAddressAndPort("127.0.0.1", 9223, 10) != net::OK) {
-      fprintf(stderr, "createServer 2\n");
       return nullptr;
     }
-    fprintf(stderr, "createServer 3\n");
     ServerWrapper* server_wrapper = new ServerWrapper(server_socket.Pass());
-    fprintf(stderr, "createServer 6\n");
-
-
+    fprintf(stderr, "RemoteDebuggingServer::createServer\n");
     return server_wrapper;
 }
 

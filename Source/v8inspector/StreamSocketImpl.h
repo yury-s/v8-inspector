@@ -11,7 +11,7 @@ namespace net {
 
 class StreamSocketImpl : public StreamSocket {
  public:
-  StreamSocketImpl();
+  explicit StreamSocketImpl(int);
   virtual ~StreamSocketImpl();
 
   // Called to establish a connection.  Returns OK if the connection could be
@@ -29,7 +29,7 @@ class StreamSocketImpl : public StreamSocket {
   // Connect may also be called again after a call to the Disconnect method.
   //
   virtual int Connect(const CompletionCallback& callback) override {
-    fprintf(stderr, "SteamSocketImpl\n");
+    fprintf(stderr, "SteamSocketImpl Connect\n");
     return -1;
   }
 
@@ -62,7 +62,7 @@ class StreamSocketImpl : public StreamSocket {
   // Copies the peer address to |address| and returns a network error code.
   // ERR_SOCKET_NOT_CONNECTED will be returned if the socket is not connected.
   virtual int GetPeerAddress(IPEndPoint* address) const override {
-    fprintf(stderr, "SteamSocketImpl\n");
+    fprintf(stderr, "SteamSocketImpl GetPeerAddress\n");
     return -1;
   }
 
@@ -151,11 +151,7 @@ class StreamSocketImpl : public StreamSocket {
 
 
 
-  virtual int Read(IOBuffer* buf, int buf_len,
-                   const CompletionCallback& callback) override {
-    fprintf(stderr, "StreamSocketImpl\n");
-    return -1;
-  }
+  int Read(IOBuffer* buf, int buf_len, const CompletionCallback& callback) override;
 
   // Writes data, up to |buf_len| bytes, to the socket.  Note: data may be
   // written partially.  The number of bytes written is returned, or an error
@@ -169,17 +165,13 @@ class StreamSocketImpl : public StreamSocket {
   // closed.  Implementations of this method should not modify the contents
   // of the actual buffer that is written to the socket.  If the socket is
   // Disconnected before the write completes, the callback will not be invoked.
-  virtual int Write(IOBuffer* buf, int buf_len,
-                    const CompletionCallback& callback) override {
-    fprintf(stderr, "StreamSocketImpl\n");
-    return -1;
-  }
+  int Write(IOBuffer* buf, int buf_len, const CompletionCallback& callback) override;
 
   // Set the receive buffer size (in bytes) for the socket.
   // Note: changing this value can affect the TCP window size on some platforms.
   // Returns a net error code.
   virtual int SetReceiveBufferSize(int32 size) override {
-    fprintf(stderr, "StreamSocketImpl\n");
+    fprintf(stderr, "StreamSocketImpl SetReceiveBufferSize \n");
     return -1;
   }
 
@@ -187,12 +179,13 @@ class StreamSocketImpl : public StreamSocket {
   // Note: changing this value can affect the TCP window size on some platforms.
   // Returns a net error code.
   virtual int SetSendBufferSize(int32 size) override {
-    fprintf(stderr, "StreamSocketImpl\n");
+    fprintf(stderr, "StreamSocketImpl SetSendBufferSize\n");
     return -1;
   }
 
-
  private:
+  int client_socket_;
+
   DISALLOW_COPY_AND_ASSIGN(StreamSocketImpl);
 };
 
