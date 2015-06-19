@@ -81,7 +81,7 @@ void RemoteDebuggingServer::HandleConnect(int connection_id)
 
 void RemoteDebuggingServer::HandleMessageFromClient(int connection_id, const std::string& data)
 {
-    fprintf(stderr, "RemoteDebuggingServer::HandleMessageFromClient\n");
+    fprintf(stderr, "RemoteDebuggingServer::HandleMessageFromClient %s\n", data.substr(0, 100).data());
     String message = String::fromUTF8(data.data(), data.length());
     inspector_->dispatchMessageFromFrontend(message);
 }
