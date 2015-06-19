@@ -15,19 +15,27 @@ class MessageLoop;
 
 namespace v8inspector {
 
-class RemoteDebuggingServer {
+class RemoteDebuggingServer : public net::HttpServer::Delegate {
 public:
     RemoteDebuggingServer();
-    ~RemoteDebuggingServer();
-
-
-    static void* createServer();
+    virtual ~RemoteDebuggingServer();
 
 private:
     void StartServerOnHandlerThread();
 
-    scoped_ptr<base::Thread> thread_;
+    // net::HttpServer::Delegate implementation.
+    void OnConnect(int connection_id) override {}
+    void OnHttpRequest(int connection_id,
+                       const net::HttpServerRequestInfo& info) override;
+    void OnWebSocketRequest(int connection_id,
+                            const net::HttpServerRequestInfo& info) override;
+    void OnWebSocketMessage(int connection_id,
+                            const std::string& data) override;
+    void OnClose(int connection_id) override;
+
+    scoped_ptr<base::Thread> io_thread_;
     base::MessageLoop* main_thread_loop_;
+    scoped_ptr<net::HttpServer> http_server_;
 };
 
 }  // namespace net

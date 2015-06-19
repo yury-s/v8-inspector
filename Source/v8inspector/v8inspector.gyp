@@ -22,6 +22,8 @@
                 'remote_debugging_server.cc',
                 'remote_debugging_server.h',
 
+                'V8InspectorThreads.cpp',
+                'V8InspectorThreads.h',
                 'V8InspectorMain.cpp',
                 'V8Inspector.cpp',
                 'V8Inspector.h',
