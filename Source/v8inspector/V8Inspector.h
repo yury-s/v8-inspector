@@ -31,7 +31,7 @@ public:
     DECLARE_TRACE();
 
     void registerModuleAgent(PassOwnPtrWillBeRawPtr<InspectorAgent>);
-    void connectFrontend();
+    void connectFrontend(InspectorFrontendChannel*);
     void disconnectFrontend();
     void restoreInspectorStateFromCookie(const String& inspectorCookie);
     void dispatchMessageFromFrontend(const String&);
@@ -50,7 +50,7 @@ private:
     OwnPtrWillBeMember<InjectedScriptManager> m_injectedScriptManager;
     OwnPtrWillBeMember<WorkerThreadDebugger> m_workerThreadDebugger;
     InspectorAgentRegistry m_agents;
-    OwnPtr<InspectorFrontendChannel> m_frontendChannel;
+    InspectorFrontendChannel* m_frontendChannel;
     OwnPtr<InspectorFrontend> m_frontend;
     RefPtrWillBeMember<InspectorBackendDispatcher> m_backendDispatcher;
     RawPtrWillBeMember<WorkerDebuggerAgent> m_workerDebuggerAgent;

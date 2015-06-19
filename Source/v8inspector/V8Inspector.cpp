@@ -21,24 +21,6 @@ namespace blink {
 
 namespace {
 
-class ChannelImpl final : public InspectorFrontendChannel {
-public:
-    explicit ChannelImpl() { }
-    virtual ~ChannelImpl() { }
-private:
-    virtual void sendProtocolResponse(int callId, PassRefPtr<JSONObject> message) override
-    {
-        printf("ChannelImpl::sendProtocolResponse \n");
-//         printf("ChannelImpl::sendProtocolResponse callId = %d message = %s\n", callId, message->toPrettyJSONString().utf8().data());
-    }
-    virtual void sendProtocolNotification(PassRefPtr<JSONObject> message) override
-    {
-        printf("ChannelImpl::sendProtocolNotification \n");
-//         printf("ChannelImpl::sendProtocolNotification message = %s\n", message->toPrettyJSONString().utf8().data());
-    }
-    virtual void flush() override { }
-};
-
 class StateClientImpl final : public InspectorStateClient {
 public:
     StateClientImpl() { }
@@ -48,8 +30,6 @@ private:
     virtual void updateInspectorStateCookie(const String& cookie) override { }
 };
 
-}
-
 class InjectedScriptHostClientImpl: public InjectedScriptHostClient {
 public:
     InjectedScriptHostClientImpl() { }
@@ -57,12 +37,15 @@ public:
     ~InjectedScriptHostClientImpl() override { }
 };
 
+}
+
 V8Inspector::V8Inspector(v8::Isolate* isolate)
     : m_stateClient(adoptPtr(new StateClientImpl()))
     , m_state(adoptPtrWillBeNoop(new InspectorCompositeState(m_stateClient.get())))
     , m_injectedScriptManager(InjectedScriptManager::createForWorker())
     , m_workerThreadDebugger(WorkerThreadDebugger::create(isolate))
     , m_agents(m_state.get())
+    , m_frontendChannel(nullptr)
     , m_paused(false)
 {
     ScriptState* scriptState = ScriptState::current(isolate);
@@ -87,13 +70,13 @@ void V8Inspector::registerModuleAgent(PassOwnPtrWillBeRawPtr<InspectorAgent> age
     m_agents.append(agent);
 }
 
-void V8Inspector::connectFrontend()
+void V8Inspector::connectFrontend(InspectorFrontendChannel* channel)
 {
     ASSERT(!m_frontend);
     m_state->unmute();
-    m_frontendChannel = adoptPtr(new ChannelImpl());
-    m_frontend = adoptPtr(new InspectorFrontend(m_frontendChannel.get()));
-    m_backendDispatcher = InspectorBackendDispatcher::create(m_frontendChannel.get());
+    m_frontendChannel = channel;
+    m_frontend = adoptPtr(new InspectorFrontend(m_frontendChannel));
+    m_backendDispatcher = InspectorBackendDispatcher::create(m_frontendChannel);
     m_agents.registerInDispatcher(m_backendDispatcher.get());
     m_agents.setFrontend(m_frontend.get());
 }
@@ -109,13 +92,13 @@ void V8Inspector::disconnectFrontend()
     m_state->mute();
     m_agents.clearFrontend();
     m_frontend.clear();
-    m_frontendChannel.clear();
+    m_frontendChannel = nullptr;
 }
 
 void V8Inspector::restoreInspectorStateFromCookie(const String& inspectorCookie)
 {
     ASSERT(!m_frontend);
-    connectFrontend();
+    connectFrontend(nullptr);
     m_state->loadFromCookie(inspectorCookie);
 
     m_agents.restore();

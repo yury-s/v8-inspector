@@ -101,12 +101,12 @@ int main(int argc, char* argv[]) {
     OwnPtr<V8Inspector> inspector = adoptPtr(new V8Inspector(isolate));
     fprintf(stderr, "V8 inspector is running\n");
     //RemoteDebuggingServer::createServer();
-    scoped_ptr<RemoteDebuggingServer> server(new RemoteDebuggingServer);
+    scoped_ptr<RemoteDebuggingServer> server(new RemoteDebuggingServer(inspector.get()));
     base::RunLoop run_loop;
     run_loop.Run();
 
-    inspector->connectFrontend();
-    inspector->dispatchMessageFromFrontend("{\"id\":27,\"method\":\"Debugger.enable\"}");
+//     inspector->connectFrontend();
+//     inspector->dispatchMessageFromFrontend("{\"id\":27,\"method\":\"Debugger.enable\"}");
 
     result = RunMain(isolate, argc, argv);
     if (run_shell) RunShell(context);
