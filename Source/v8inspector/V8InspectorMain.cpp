@@ -12,6 +12,12 @@
 #include <include/v8.h>
 #include <include/libplatform/libplatform.h>
 
+#include "base/message_loop/message_loop.h"
+#include "base/at_exit.h"
+#include "base/run_loop.h"
+#include "base/threading/thread.h"
+#include "base/bind.h"
+
 #include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -19,6 +25,7 @@
 #include <string.h>
 
 using namespace blink;
+using namespace v8inspector;
 
 /**
  * This sample program shows how to implement a simple javascript shell
@@ -61,6 +68,9 @@ class ShellArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 
 
 int main(int argc, char* argv[]) {
+  base::AtExitManager at_exit;
+  base::MessageLoop message_loop;
+
   v8::V8::InitializeICU();
   v8::Platform* platform = v8::platform::CreateDefaultPlatform();
   v8::V8::InitializePlatform(platform);
@@ -88,9 +98,10 @@ int main(int argc, char* argv[]) {
     ScriptState::create(context);
     OwnPtr<V8Inspector> inspector = adoptPtr(new V8Inspector(isolate));
     fprintf(stderr, "V8 inspector is running\n");
-    //net::ServerWrapper* wrapper = 
-    net::RemoteDebuggingServer::createServer();
-
+    //RemoteDebuggingServer::createServer();
+    scoped_ptr<RemoteDebuggingServer> server(new RemoteDebuggingServer);
+    base::RunLoop run_loop;
+    run_loop.Run();
 
     inspector->connectFrontend();
     inspector->dispatchMessageFromFrontend("{\"id\":27,\"method\":\"Debugger.enable\"}");

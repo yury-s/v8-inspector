@@ -57,6 +57,7 @@
       'dependencies': [
         # instead of 'webcore_prerequisites':
         '<(DEPTH)/url/url.gyp:url_lib', # this one is required due to ScriptStreamer.h
+        '<(DEPTH)/base/base.gyp:base',
 
         # Exported.
         '../wtf/wtf.gyp:wtf',

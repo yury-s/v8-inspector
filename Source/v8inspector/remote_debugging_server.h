@@ -5,15 +5,29 @@
 #ifndef REMOTE_DEBUGGING_SERVER_H_
 #define REMOTE_DEBUGGING_SERVER_H_
 
+#include "base/memory/scoped_ptr.h"
 #include "net/server/http_server.h"
 
-namespace net {
+namespace base {
+class Thread;
+class MessageLoop;
+}
 
-//class ServerWrapper;
+namespace v8inspector {
 
 class RemoteDebuggingServer {
 public:
+    RemoteDebuggingServer();
+    ~RemoteDebuggingServer();
+
+
     static void* createServer();
+
+private:
+    void StartServerOnHandlerThread();
+
+    scoped_ptr<base::Thread> thread_;
+    base::MessageLoop* main_thread_loop_;
 };
 
 }  // namespace net

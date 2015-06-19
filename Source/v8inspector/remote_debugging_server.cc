@@ -4,11 +4,15 @@
 
 #include "v8inspector/remote_debugging_server.h"
 
+#include "base/message_loop/message_loop.h"
+#include "base/run_loop.h"
+#include "base/threading/thread.h"
+#include "base/bind.h"
 #include "net/base/net_errors.h"
 #include "net/server/http_server.h"
 #include "net/socket/tcp_server_socket.h"
 
-namespace net {
+namespace v8inspector {
 
  
 namespace {
@@ -100,26 +104,86 @@ void ServerWrapper::Close(int connection_id) {
 
 
 void ServerWrapper::OnHttpRequest(int connection_id, const net::HttpServerRequestInfo& info) {
+    fprintf(stderr, "ServerWrapper::OnHttpRequest 1\n");
 }
 
 void ServerWrapper::OnWebSocketRequest(int connection_id, const net::HttpServerRequestInfo& info) {
-
+    fprintf(stderr, "ServerWrapper::OnWebSocketRequest 1\n");
+    AcceptWebSocket(connection_id, info);
+    fprintf(stderr, "ServerWrapper::OnWebSocketRequest 2\n");
 }
 
 void ServerWrapper::OnWebSocketMessage(int connection_id, const std::string& data) {
+    fprintf(stderr, "ServerWrapper::OnWebSocketMessage 1 m = %s\n", data.data());
 }
 
 void ServerWrapper::OnClose(int connection_id) {
+    fprintf(stderr, "ServerWrapper::OnClose\n");
 }
 
 }
+
+static void ioTask(int n)
+{
+  fprintf(stderr, "**** ioTask n = %d\n", n);
+}
+
+RemoteDebuggingServer::RemoteDebuggingServer()
+    : thread_(nullptr)
+    , main_thread_loop_(base::MessageLoop::current())
+{
+    thread_.reset(new base::Thread("IO/Handler Thread"));
+    base::Thread::Options options;
+    options.message_loop_type = base::MessageLoop::TYPE_IO;
+    if (thread_->StartWithOptions(options)) {
+        base::MessageLoop* message_loop = thread_->message_loop();
+        message_loop->task_runner()->PostTask(FROM_HERE, base::Bind(ioTask, 1));
+        message_loop->task_runner()->PostTask(
+            FROM_HERE,
+            base::Bind(&RemoteDebuggingServer::StartServerOnHandlerThread,
+                       base::Unretained(this)));
+        message_loop->task_runner()->PostTask(FROM_HERE, base::Bind(ioTask, 2));
+    }
+}
+
+RemoteDebuggingServer::~RemoteDebuggingServer()
+{
+}
+
+void RemoteDebuggingServer::StartServerOnHandlerThread()
+{
+    scoped_ptr<net::ServerSocket> server_socket(
+        new net::TCPServerSocket(nullptr, net::NetLog::Source()));
+    if (server_socket->ListenWithAddressAndPort("127.0.0.1", 2015, 10) != net::OK) {
+        fprintf(stderr, "RemoteDebuggingServer::StartServerOnHandlerThread FAILED to start listen socket\n");
+        return;
+    }
+    fprintf(stderr, "RemoteDebuggingServer::StartServerOnHandlerThread 2\n");
+    scoped_ptr<net::IPEndPoint> ip_address(new net::IPEndPoint);
+    ServerWrapper* server_wrapper = new ServerWrapper(server_socket.Pass());
+    fprintf(stderr, "RemoteDebuggingServer::StartServerOnHandlerThread 3\n");
+    if (server_wrapper->GetLocalAddress(ip_address.get()) != net::OK) {
+        fprintf(stderr, "RemoteDebuggingServer::StartServerOnHandlerThread 4 failed to GetLocalAddress\n");
+        ip_address.reset();
+    }
+    fprintf(stderr, "RemoteDebuggingServer::StartServerOnHandlerThread 5\n");
+//     BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
+//         base::Bind(&ServerStartedOnUI,
+//                    handler,
+//                    thread,
+//                    server_wrapper,
+//                    server_socket_factory,
+//                    base::Passed(&ip_address)));
+}
+
+
 
 void* RemoteDebuggingServer::createServer()
 {
     scoped_ptr<net::ServerSocket> server_socket(
         new net::TCPServerSocket(nullptr, net::NetLog::Source()));
     fprintf(stderr, "createServer 1\n");
-    if (server_socket->ListenWithAddressAndPort("127.0.0.1", 9223, 10) != net::OK) {
+    if (server_socket->ListenWithAddressAndPort("127.0.0.1", 2015, 10) != net::OK) {
     fprintf(stderr, "createServer 2\n");
       return nullptr;
     }
