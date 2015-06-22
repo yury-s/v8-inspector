@@ -93,6 +93,11 @@ static void runMainTask(v8::Isolate* isolate, int argc, char* argv[], int* resul
     }
 }
 
+void quitWhenIdle(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    run_shell = false;
+    base::MessageLoop::current()->QuitWhenIdle();
+}
+
 }
 
 int main(int argc, char* argv[]) {
@@ -144,6 +149,7 @@ int main(int argc, char* argv[]) {
   v8::V8::Dispose();
   v8::V8::ShutdownPlatform();
   delete platform;
+  fprintf(stderr, "Deleted platform.\n");
   return result;
 }
 
@@ -174,6 +180,10 @@ v8::Handle<v8::Context> CreateShellContext(v8::Isolate* isolate) {
   // Bind the 'version' function
   global->Set(v8::String::NewFromUtf8(isolate, "version"),
               v8::FunctionTemplate::New(isolate, Version));
+
+  // Bind the 'quitWhenIdle' function
+  global->Set(v8::String::NewFromUtf8(isolate, "quitWhenIdle"),
+              v8::FunctionTemplate::New(isolate, quitWhenIdle));
 
   return v8::Context::New(isolate, NULL, global);
 }
@@ -343,7 +353,7 @@ void RunShell(v8::Handle<v8::Context> context) {
   v8::Context::Scope context_scope(context);
   v8::Local<v8::String> name(
       v8::String::NewFromUtf8(context->GetIsolate(), "(shell)"));
-  while (true) {
+  while (run_shell) {
     char buffer[kBufferSize];
     fprintf(stderr, "> ");
     char* str = fgets(buffer, kBufferSize, stdin);
