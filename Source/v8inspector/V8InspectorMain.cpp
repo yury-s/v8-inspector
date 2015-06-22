@@ -86,13 +86,11 @@ class ShellArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 
 static void runMainTask(v8::Isolate* isolate, int argc, char* argv[], int* result)
 {
-    fprintf(stderr, "runMainTask >>\n");
     *result = RunMain(isolate, argc, argv);
     if (run_shell) {
         v8::Local<v8::Context> context = isolate->GetCurrentContext();
         RunShell(context);
     }
-    fprintf(stderr, "runMainTask <<\n");
 }
 
 }
@@ -119,6 +117,8 @@ int main(int argc, char* argv[]) {
     v8::Isolate::Scope isolate_scope(isolate);
     v8::HandleScope handle_scope(isolate);
     v8::Handle<v8::Context> context = CreateShellContext(isolate);
+    // Set context deubg data to see its scripts in the debugger.
+    WorkerThreadDebugger::setContextDebugData(context);
     if (context.IsEmpty()) {
       fprintf(stderr, "Error creating context\n");
       return 1;
