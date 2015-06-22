@@ -20,8 +20,8 @@
                 '../chrome/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
             ],
             'sources': [
-                'remote_debugging_server.cc',
-                'remote_debugging_server.h',
+                'RemoteDebuggingServer.cc',
+                'RemoteDebuggingServer.h',
                 'V8InspectorMain.cpp',
                 'V8Inspector.cpp',
                 'V8Inspector.h',

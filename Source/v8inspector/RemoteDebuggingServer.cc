@@ -4,7 +4,7 @@
 
 #include "config.h"
 
-#include "v8inspector/remote_debugging_server.h"
+#include "v8inspector/RemoteDebuggingServer.h"
 
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"

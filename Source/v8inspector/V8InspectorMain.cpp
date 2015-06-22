@@ -6,7 +6,7 @@
 
 #include "bindings/core/v8/ScriptState.h"
 #include "v8inspector/V8Inspector.h"
-#include "v8inspector/remote_debugging_server.h"
+#include "v8inspector/RemoteDebuggingServer.h"
 #include "wtf/OwnPtr.h"
 
 #include <include/v8.h>
