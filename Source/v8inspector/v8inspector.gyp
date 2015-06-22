@@ -15,6 +15,7 @@
                 '../config.gyp:config',
                 '../core/core.gyp:webcore_v8inspector',
                 '../wtf/wtf.gyp:wtf',
+                '../chrome/base/base.gyp:base',
                 '../chrome/v8/tools/gyp/v8.gyp:v8',
                 '../chrome/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
             ],
@@ -43,7 +44,7 @@
           'type': 'static_library',
           'variables': { 'enable_wexit_time_destructors': 1, },
           'dependencies': [
-#            '../chrome/url/url.gyp:url_lib',
+            '../chrome/base/base.gyp:base',
             '../chrome/third_party/zlib/zlib.gyp:zlib',
           ],
           'sources': [
