@@ -5,7 +5,6 @@
 #include "config.h"
 
 #include "bindings/core/v8/ScriptState.h"
-#include "v8inspector/V8InspectorThreads.h"
 #include "v8inspector/V8Inspector.h"
 #include "v8inspector/remote_debugging_server.h"
 #include "wtf/OwnPtr.h"
@@ -83,7 +82,6 @@ static void runMainTask(v8::Isolate* isolate, int argc, char* argv[], int* resul
 int main(int argc, char* argv[]) {
   base::AtExitManager at_exit;
   base::MessageLoop message_loop;
-  V8InspectorThreads::setMainThreadLoop(&message_loop);
 
   v8::V8::InitializeICU();
   v8::Platform* platform = v8::platform::CreateDefaultPlatform();

@@ -13,7 +13,6 @@
 #include "net/base/net_errors.h"
 #include "net/server/http_server.h"
 #include "net/socket/tcp_server_socket.h"
-#include "v8inspector/V8InspectorThreads.h"
 #include "v8inspector/V8Inspector.h"
 #include "wtf/text/StringUTF8Adaptor.h"
 #include <string>
@@ -140,7 +139,6 @@ RemoteDebuggingServer::RemoteDebuggingServer(V8Inspector* inspector)
     options.message_loop_type = base::MessageLoop::TYPE_IO;
     if (io_thread_->StartWithOptions(options)) {
         base::MessageLoop* message_loop = io_thread_->message_loop();
-        V8InspectorThreads::setIOThreadLoop(message_loop);
         message_loop->task_runner()->PostTask(
             FROM_HERE,
             base::Bind(&RemoteDebuggingServer::StartServerOnHandlerThread,
