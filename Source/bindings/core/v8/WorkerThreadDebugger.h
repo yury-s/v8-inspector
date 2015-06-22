@@ -43,9 +43,17 @@ class WorkerThreadDebugger final : public NoBaseWillBeGarbageCollectedFinalized<
     WTF_MAKE_NONCOPYABLE(WorkerThreadDebugger);
     WILL_BE_USING_GARBAGE_COLLECTED_MIXIN(WorkerThreadDebugger);
 public:
-    static PassOwnPtrWillBeRawPtr<WorkerThreadDebugger> create(v8::Isolate* isolate)
+    class ClientMessageLoop {
+    public:
+        virtual ~ClientMessageLoop() { }
+        virtual void run() = 0;
+        virtual void quitNow() = 0;
+    };
+
+    static PassOwnPtrWillBeRawPtr<WorkerThreadDebugger> create(v8::Isolate* isolate, PassOwnPtr<ClientMessageLoop> clientMessageLoop)
+
     {
-        return adoptPtrWillBeNoop(new WorkerThreadDebugger(isolate));
+        return adoptPtrWillBeNoop(new WorkerThreadDebugger(isolate, clientMessageLoop));
     }
 
     ~WorkerThreadDebugger() override;
@@ -55,12 +63,13 @@ public:
     void removeListener(ScriptDebugListener*);
 
 private:
-    explicit WorkerThreadDebugger(v8::Isolate*);
+    explicit WorkerThreadDebugger(v8::Isolate*, PassOwnPtr<ClientMessageLoop>);
 
-    ScriptDebugListener* getDebugListenerForContext(v8::Local<v8::Context>);
-    void runMessageLoopOnPause(v8::Local<v8::Context>);
-    void quitMessageLoopOnPause();
+    ScriptDebugListener* getDebugListenerForContext(v8::Local<v8::Context>) override;
+    void runMessageLoopOnPause(v8::Local<v8::Context>) override;
+    void quitMessageLoopOnPause() override;
 
+    OwnPtr<ClientMessageLoop> m_clientMessageLoop;
     ScriptDebugListener* m_listener;
 };
 

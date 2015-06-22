@@ -40,8 +40,9 @@ namespace blink {
 
 static const char* workerContextDebugId = "[worker]";
 
-WorkerThreadDebugger::WorkerThreadDebugger(v8::Isolate* isolate)
+WorkerThreadDebugger::WorkerThreadDebugger(v8::Isolate* isolate, PassOwnPtr<ClientMessageLoop> clientMessageLoop)
     : ScriptDebuggerBase(isolate, V8Debugger::create(isolate, this))
+    , m_clientMessageLoop(clientMessageLoop)
     , m_listener(nullptr)
 {
 }
@@ -79,14 +80,15 @@ ScriptDebugListener* WorkerThreadDebugger::getDebugListenerForContext(v8::Local<
 
 void WorkerThreadDebugger::runMessageLoopOnPause(v8::Local<v8::Context>)
 {
-    printf("WorkerThreadDebugger::runMessageLoopOnPause\n");
+    // Wait for continue or step command.
+    m_clientMessageLoop->run();
     if (m_listener)
         m_listener->didContinue();
 }
 
 void WorkerThreadDebugger::quitMessageLoopOnPause()
 {
-    // Nothing to do here in case of workers since runMessageLoopOnPause will check for paused state after each debugger command.
+    m_clientMessageLoop->quitNow();
 }
 
 } // namespace blink

@@ -5,6 +5,7 @@
 #ifndef V8Inspector_h
 #define V8Inspector_h
 
+#include "bindings/core/v8/WorkerThreadDebugger.h"
 #include "core/inspector/InspectorBaseAgent.h"
 #include "core/inspector/InspectorRuntimeAgent.h"
 #include "wtf/Forward.h"
@@ -26,7 +27,7 @@ class WorkerThreadDebugger;
 class V8Inspector : public InspectorRuntimeAgent::Client {
     WTF_MAKE_NONCOPYABLE(V8Inspector);
 public:
-    explicit V8Inspector(v8::Isolate*);
+    explicit V8Inspector(v8::Isolate*, PassOwnPtr<WorkerThreadDebugger::ClientMessageLoop>);
     ~V8Inspector();
     DECLARE_TRACE();
 

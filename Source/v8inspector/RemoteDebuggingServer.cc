@@ -95,14 +95,14 @@ void RemoteDebuggingServer::HandleDisconnect(int connection_id)
 void RemoteDebuggingServer::sendProtocolResponse(int callId, PassRefPtr<JSONObject> message)
 {
 //    printf("ChannelImpl::sendProtocolResponse \n");
-    printf("ChannelImpl::sendProtocolResponse callId = %d message = %s\n", callId, message->toPrettyJSONString().utf8().data());
+//    printf("ChannelImpl::sendProtocolResponse callId = %d message = %s\n", callId, message->toPrettyJSONString().utf8().data());
     serializeAndSend(message);
 }
 
 void RemoteDebuggingServer::sendProtocolNotification(PassRefPtr<JSONObject> message)
 {
-    printf("ChannelImpl::sendProtocolNotification \n");
-//         printf("ChannelImpl::sendProtocolNotification message = %s\n", message->toPrettyJSONString().utf8().data());
+//    printf("ChannelImpl::sendProtocolNotification \n");
+//    printf("ChannelImpl::sendProtocolNotification message = %s\n", message->toPrettyJSONString().utf8().data());
     serializeAndSend(message);
 }
 
@@ -121,6 +121,7 @@ void RemoteDebuggingServer::serializeAndSend(PassRefPtr<blink::JSONObject> messa
 // Send methods. Called on the IO thread.
 void RemoteDebuggingServer::sendMessageToClient(const std::string& message)
 {
+    fprintf(stderr, "RemoteDebuggingServer::sendMessageToClient %s\n", message.substr(0, 100).data());
     if (connection_id_ == -1) {
         printf("RemoteDebuggingServer::sendMessageToClient failed, connection closed \n");
         return;

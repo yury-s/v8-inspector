@@ -39,11 +39,11 @@ public:
 
 }
 
-V8Inspector::V8Inspector(v8::Isolate* isolate)
+V8Inspector::V8Inspector(v8::Isolate* isolate, PassOwnPtr<WorkerThreadDebugger::ClientMessageLoop> messageLoop)
     : m_stateClient(adoptPtr(new StateClientImpl()))
     , m_state(adoptPtrWillBeNoop(new InspectorCompositeState(m_stateClient.get())))
     , m_injectedScriptManager(InjectedScriptManager::createForWorker())
-    , m_workerThreadDebugger(WorkerThreadDebugger::create(isolate))
+    , m_workerThreadDebugger(WorkerThreadDebugger::create(isolate, messageLoop))
     , m_agents(m_state.get())
     , m_frontendChannel(nullptr)
     , m_paused(false)
