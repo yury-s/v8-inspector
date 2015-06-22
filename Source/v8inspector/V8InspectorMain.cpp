@@ -68,6 +68,18 @@ class ShellArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 };
 
 
+static void runMainTask(v8::Isolate* isolate, int argc, char* argv[], int* result)
+{
+    fprintf(stderr, "runMainTask >>\n");
+    *result = RunMain(isolate, argc, argv);
+    if (run_shell) {
+        v8::Local<v8::Context> context = isolate->GetCurrentContext();
+        RunShell(context);
+    }
+    fprintf(stderr, "runMainTask <<\n");
+}
+
+
 int main(int argc, char* argv[]) {
   base::AtExitManager at_exit;
   base::MessageLoop message_loop;
@@ -82,6 +94,7 @@ int main(int argc, char* argv[]) {
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = &array_buffer_allocator;
   v8::Isolate* isolate = v8::Isolate::New(create_params);
+
   run_shell = (argc == 1);
 
   fprintf(stderr, "main 10\n");
@@ -100,16 +113,16 @@ int main(int argc, char* argv[]) {
     ScriptState::create(context);
     OwnPtr<V8Inspector> inspector = adoptPtr(new V8Inspector(isolate));
     fprintf(stderr, "V8 inspector is running\n");
-    //RemoteDebuggingServer::createServer();
     scoped_ptr<RemoteDebuggingServer> server(new RemoteDebuggingServer(inspector.get()));
+
+    message_loop.task_runner()->PostTask(
+        FROM_HERE,
+        base::Bind(&runMainTask, base::Unretained(isolate), argc, base::Unretained(argv), base::Unretained(&result)));
+
+    fprintf(stderr, "Start running main loop\n");
     base::RunLoop run_loop;
     run_loop.Run();
-
-//     inspector->connectFrontend();
-//     inspector->dispatchMessageFromFrontend("{\"id\":27,\"method\":\"Debugger.enable\"}");
-
-    result = RunMain(isolate, argc, argv);
-    if (run_shell) RunShell(context);
+    fprintf(stderr, "Exited main loop\n");
   }
   isolate->Dispose();
   v8::V8::Dispose();
