@@ -74,7 +74,6 @@ static void useCounterCallback(v8::Isolate* isolate, v8::Isolate::UseCounterFeat
 
 V8PerIsolateData::V8PerIsolateData()
     : m_destructionPending(false)
-    , m_isolateHolder(adoptPtr(new gin::IsolateHolder()))
     , m_stringCache(adoptPtr(new StringCache(isolate())))
     , m_constructorMode(ConstructorMode::CreateNewObject)
     , m_recursionLevel(0)

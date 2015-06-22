@@ -56,12 +56,12 @@
       'type': 'static_library',
       'dependencies': [
         # instead of 'webcore_prerequisites':
-        '<(DEPTH)/url/url.gyp:url_lib', # this one is required due to ScriptStreamer.h
-        '<(DEPTH)/base/base.gyp:base',
+        '../chrome/url/url.gyp:url_lib', # this one is required due to ScriptStreamer.h
+        '../chrome/base/base.gyp:base',
 
         # Exported.
         '../wtf/wtf.gyp:wtf',
-        '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
+        '../chrome/v8/tools/gyp/v8.gyp:v8',
       ],
       'include_dirs': [
         '<@(webcore_include_dirs)',

@@ -30,7 +30,6 @@
 #include "bindings/core/v8/ScriptState.h"
 #include "core/CoreExport.h"
 #include "core/inspector/ScriptDebuggerBase.h"
-#include "gin/public/isolate_holder.h"
 #include "wtf/HashMap.h"
 #include "wtf/Noncopyable.h"
 #include "wtf/OwnPtr.h"
@@ -68,7 +67,6 @@ public:
     static v8::Isolate* mainThreadIsolate();
 
     bool destructionPending() const { return m_destructionPending; }
-    v8::Isolate* isolate() { return m_isolateHolder->isolate(); }
 
     v8::Local<v8::FunctionTemplate> toStringTemplate();
 
@@ -121,7 +119,6 @@ private:
     DOMTemplateMap& currentDOMTemplateMap();
 
     bool m_destructionPending;
-    OwnPtr<gin::IsolateHolder> m_isolateHolder;
     DOMTemplateMap m_domTemplateMapForMainWorld;
     DOMTemplateMap m_domTemplateMapForNonMainWorld;
     ScopedPersistent<v8::FunctionTemplate> m_toStringTemplate;

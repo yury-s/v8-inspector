@@ -15,8 +15,8 @@
                 '../config.gyp:config',
                 '../core/core.gyp:webcore_v8inspector',
                 '../wtf/wtf.gyp:wtf',
-                '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
-                '<(DEPTH)/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
+                '../chrome/v8/tools/gyp/v8.gyp:v8',
+                '../chrome/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
             ],
             'sources': [
                 'remote_debugging_server.cc',
@@ -31,7 +31,7 @@
             'include_dirs': [
                 '..',  # WebKit/Source
                 '../chrome',  # WebKit/Source/chrome
-                '<(DEPTH)/v8', # for include/v8-platform.h in include/libplatform/libplatform.h
+                '../chrome/v8', # for include/v8-platform.h in include/libplatform/libplatform.h
             ],
             'defines': [
                 'INSIDE_BLINK',

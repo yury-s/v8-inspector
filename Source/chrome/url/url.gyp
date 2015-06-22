@@ -36,36 +36,6 @@
       # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
       'msvs_disabled_warnings': [4267, ],
     },
-    {
-      'target_name': 'url_unittests',
-      'type': 'executable',
-      'dependencies': [
-        '../base/base.gyp:run_all_unittests',
-        '../testing/gtest.gyp:gtest',
-        '../third_party/icu/icu.gyp:icuuc',
-        'url_lib',
-      ],
-      'sources': [
-        'gurl_unittest.cc',
-        'origin_unittest.cc',
-        'url_canon_icu_unittest.cc',
-        'url_canon_unittest.cc',
-        'url_parse_unittest.cc',
-        'url_test_utils.h',
-        'url_util_unittest.cc',
-      ],
-      'conditions': [
-        ['os_posix==1 and OS!="mac" and OS!="ios" and use_allocator!="none"',
-          {
-            'dependencies': [
-              '../base/allocator/allocator.gyp:allocator',
-            ],
-          }
-        ],
-      ],
-      # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-      'msvs_disabled_warnings': [4267, ],
-    },
   ],
   'conditions': [
     ['OS=="android"', {
