@@ -120,25 +120,5 @@
       ],
     },
   },
-  {
-    'target_name': 'unittest_config',
-    'type': 'none',
-    'dependencies': [
-      'config',
-      '<(DEPTH)/testing/gmock.gyp:gmock',
-      '<(DEPTH)/testing/gtest.gyp:gtest',
-    ],
-    'export_dependent_settings': [
-      'config',
-      '<(DEPTH)/testing/gmock.gyp:gmock',
-      '<(DEPTH)/testing/gtest.gyp:gtest',
-    ],
-    'direct_dependent_settings': {
-      'variables': {
-        'chromium_code': 1,
-        'clang_warning_flags_unset': [ '-Wglobal-constructors' ],
-      },
-    },
-  }
   ],
 }
