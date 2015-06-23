@@ -429,18 +429,6 @@
             'base',
           ],
         },
-        {
-          'target_name': 'build_utf8_validator_tables',
-          'type': 'executable',
-          'toolsets': ['host'],
-          'dependencies': [
-            'base',
-            '../third_party/icu/icu.gyp:icuuc',
-          ],
-          'sources': [
-            'i18n/build_utf8_validator_tables.cc'
-          ],
-        },
       ],
     }],
     ['OS == "win" and target_arch=="ia32"', {

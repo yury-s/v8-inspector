@@ -154,6 +154,36 @@
           # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
           'msvs_disabled_warnings': [4267, ],
         },
+        {
+            'target_name': 'iojs_inspector',
+            'type': 'executable',
+            'dependencies': [
+                'http_server',
+                '../config.gyp:config',
+                '../core/core.gyp:webcore_v8inspector',
+                '../wtf/wtf.gyp:wtf',
+                '../chrome/base/base.gyp:base',
+                '../chrome/v8/tools/gyp/v8.gyp:v8',
+                '../chrome/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
+
+                '../../io.js/node.gyp:iojs',
+            ],
+            'sources': [
+                'RemoteDebuggingServer.cc',
+                'RemoteDebuggingServer.h',
+                'V8InspectorMain.cpp',
+                'V8Inspector.cpp',
+                'V8Inspector.h',
+            ],
+            'include_dirs': [
+                '..',  # WebKit/Source
+                '../chrome',  # WebKit/Source/chrome
+                '../chrome/v8', # for include/v8-platform.h in include/libplatform/libplatform.h
+            ],
+            'defines': [
+                'INSIDE_BLINK',
+            ],
+        },
 
     ],
 }
