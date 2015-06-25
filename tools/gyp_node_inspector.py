@@ -6,7 +6,7 @@ import sys
 
 script_dir = os.path.dirname(__file__)
 v8inspector_root = os.path.normpath(os.path.join(script_dir, os.pardir))
-node_root = os.path.join(os.path.abspath(v8inspector_root), 'io.js')
+node_root = os.path.join(os.path.abspath(v8inspector_root), 'Source', 'io.js')
 chrome_root = os.path.join(os.path.abspath(v8inspector_root), 'Source', 'chrome')
 
 sys.path.insert(0, os.path.join(chrome_root, 'tools', 'gyp', 'pylib'))
@@ -58,6 +58,7 @@ if __name__ == '__main__':
   args.extend(['-Goutput_dir=' + output_dir])
 
   args.append('-Dv8_use_external_startup_data=0')
+  args.append('-Duse_goma=1')
   args.append(os.path.join(v8inspector_root, 'Source', 'v8inspector', 'v8inspector.gyp'))
 
   gyp_args = list(args)
