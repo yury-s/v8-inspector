@@ -1,0 +1,3 @@
+[submodule "Source/io.js"]
+	path = Source/io.js
+	url = https://github.com/nodejs/io.js.git
