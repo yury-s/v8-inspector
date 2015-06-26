@@ -137,3 +137,8 @@ void V8Inspector::pauseOnStart()
 }
 
 } // namespace blink
+
+int main()
+{
+    return 0;
+}

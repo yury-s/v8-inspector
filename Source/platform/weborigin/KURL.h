@@ -31,8 +31,6 @@
 #include "wtf/HashTableDeletedValueType.h"
 #include "wtf/OwnPtr.h"
 #include "wtf/text/WTFString.h"
-#include <url/third_party/mozilla/url_parse.h>
-#include <url/url_canon.h>
 
 namespace WTF {
 class TextEncoding;
@@ -75,11 +73,6 @@ public:
     // the same way we treate null and empty base URLs.
     KURL(const KURL& base, const String& relative);
     KURL(const KURL& base, const String& relative, const WTF::TextEncoding&);
-
-    // For conversions from other structures that have already parsed and
-    // canonicalized the URL. The input must be exactly what KURL would have
-    // done with the same input.
-    KURL(const AtomicString& canonicalString, const url::Parsed&, bool isValid);
 
     ~KURL();
 
@@ -175,8 +168,6 @@ public:
 
     operator const String&() const { return string(); }
 
-    const url::Parsed& parsed() const { return m_parsed; }
-
     const KURL* innerURL() const { return m_innerURL.get(); }
 
     bool isSafeToSendToAnotherThread() const;
@@ -184,11 +175,7 @@ public:
 private:
     void init(const KURL& base, const String& relative, const WTF::TextEncoding* queryEncoding);
 
-    String componentString(const url::Component&) const;
     String stringForInvalidComponent() const;
-
-    template<typename CHAR>
-    void replaceComponents(const url::Replacements<CHAR>&);
 
     template <typename CHAR>
     void init(const KURL& base, const CHAR* relative, int relativeLength, const WTF::TextEncoding* queryEncoding);
@@ -197,7 +184,6 @@ private:
 
     bool m_isValid;
     bool m_protocolIsInHTTPFamily;
-    url::Parsed m_parsed;
     String m_string;
     OwnPtr<KURL> m_innerURL;
 };

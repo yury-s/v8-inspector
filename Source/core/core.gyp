@@ -55,9 +55,6 @@
       'target_name': 'webcore_v8inspector',
       'type': 'static_library',
       'dependencies': [
-        # instead of 'webcore_prerequisites':
-        '../chrome/url/url.gyp:url_lib', # this one is required due to ScriptStreamer.h
-        '../chrome/base/base.gyp:base',
 
         # Exported.
         '../wtf/wtf.gyp:wtf',
