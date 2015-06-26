@@ -21,6 +21,7 @@
                 '../io.js/node.gyp:iojs',
             ],
             'sources': [
+                'NodeInspectorMain.cpp',
                 'V8Inspector.cpp',
                 'V8Inspector.h',
             ],
