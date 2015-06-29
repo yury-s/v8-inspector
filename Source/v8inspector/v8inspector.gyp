@@ -14,8 +14,8 @@
                 '../config.gyp:config',
                 '../core/core.gyp:webcore_v8inspector',
                 '../wtf/wtf.gyp:wtf',
-                '../chrome/v8/tools/gyp/v8.gyp:v8',
-                '../chrome/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
+                '../../../../deps/v8/tools/gyp/v8.gyp:v8',
+                '../../../../deps/v8/tools/gyp/v8.gyp:v8_libplatform', # for V8InspectorMain
             ],
             'sources': [
                 'V8Inspector.cpp',
@@ -23,8 +23,7 @@
             ],
             'include_dirs': [
                 '..',  # WebKit/Source
-                '../chrome',  # WebKit/Source/chrome
-                '../chrome/v8', # for include/v8-platform.h in include/libplatform/libplatform.h
+                '../../../../deps/v8', # for include/v8-platform.h in include/libplatform/libplatform.h
             ],
             'defines': [
                 'INSIDE_BLINK',

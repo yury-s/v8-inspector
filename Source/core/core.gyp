@@ -58,7 +58,7 @@
 
         # Exported.
         '../wtf/wtf.gyp:wtf',
-        '../chrome/v8/tools/gyp/v8.gyp:v8',
+        '../../../../deps/v8/tools/gyp/v8.gyp:v8',
       ],
       'include_dirs': [
         '<@(webcore_include_dirs)',

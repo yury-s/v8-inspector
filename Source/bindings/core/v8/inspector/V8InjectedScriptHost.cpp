@@ -197,12 +197,6 @@ void V8InjectedScriptHost::collectionEntriesCallback(const v8::FunctionCallbackI
 
 void V8InjectedScriptHost::getInternalPropertiesCallback(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-    if (info.Length() < 1 || !info[0]->IsObject())
-        return;
-
-    v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(info[0]);
-    v8::MaybeLocal<v8::Array> properties = v8::Debug::GetInternalProperties(info.GetIsolate(), object);
-    v8SetReturnValue(info, properties);
 }
 
 void V8InjectedScriptHost::getEventListenersCallback(const v8::FunctionCallbackInfo<v8::Value>& info)
