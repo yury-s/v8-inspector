@@ -49,7 +49,7 @@ ScriptDebuggerBase::~ScriptDebuggerBase()
 
 v8::Local<v8::Object> ScriptDebuggerBase::compileDebuggerScript()
 {
-    const char* absolutePath = "/sources/v8inspector/src/third_party/WebKit/Source/bindings/core/v8/DebuggerScript.js";
+    const char* absolutePath = "/sources/io.js/deps/WebKit/Source/bindings/core/v8/DebuggerScript.js";
     String debuggerScript = ScriptDebuggerBase::loadFromFile(absolutePath);
     fprintf(stderr, "Loaded debugger script from %s\n", absolutePath);
     v8::Local<v8::String> source = v8String(m_isolate, debuggerScript);
