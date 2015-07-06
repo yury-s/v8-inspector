@@ -158,8 +158,7 @@ void InjectedScriptManager::setCustomObjectFormatterEnabled(bool enabled)
 
 String InjectedScriptManager::injectedScriptSource()
 {
-    // FIXME load InjectedScriptSource.js
-    const char* absolutePath = "/sources/v8inspector/src/third_party/WebKit/Source/core/inspector/InjectedScriptSource.js";
+    const char* absolutePath = "./Source/core/inspector/InjectedScriptSource.js";
     fprintf(stderr, "Loaded injected script source from %s\n", absolutePath);
     return ScriptDebuggerBase::loadFromFile(absolutePath);
 }
