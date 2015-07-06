@@ -222,11 +222,6 @@ PassRefPtr<ScriptHeapSnapshot> ScriptProfiler::takeHeapSnapshot(HeapSnapshotProg
     return snapshot ? ScriptHeapSnapshot::create(snapshot) : nullptr;
 }
 
-static v8::RetainedObjectInfo* retainedDOMInfo(uint16_t classId, v8::Local<v8::Value> wrapper)
-{
-    return 0;
-}
-
 void ScriptProfiler::initialize()
 {
 }
