@@ -49,9 +49,9 @@ ScriptDebuggerBase::~ScriptDebuggerBase()
 
 v8::Local<v8::Object> ScriptDebuggerBase::compileDebuggerScript()
 {
-    const char* absolutePath = "/sources/io.js/deps/WebKit/Source/bindings/core/v8/DebuggerScript.js";
-    String debuggerScript = ScriptDebuggerBase::loadFromFile(absolutePath);
-    fprintf(stderr, "Loaded debugger script from %s\n", absolutePath);
+    const char* relativePath = "./deps/WebKit/Source/bindings/core/v8/DebuggerScript.js";
+    String debuggerScript = ScriptDebuggerBase::loadFromFile(relativePath);
+    fprintf(stderr, "Loaded debugger script from %s\n", relativePath);
     v8::Local<v8::String> source = v8String(m_isolate, debuggerScript);
     v8::Local<v8::Value> value;
     if (!V8ScriptRunner::compileAndRunInternalScript(source, m_isolate).ToLocal(&value))
