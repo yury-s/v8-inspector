@@ -11,6 +11,8 @@
 #include "core/inspector/InjectedScriptHost.h"
 #include "core/inspector/InjectedScriptManager.h"
 #include "core/inspector/InspectorFrontendChannel.h"
+#include "core/inspector/InspectorHeapProfilerAgent.h"
+#include "core/inspector/InspectorProfilerAgent.h"
 #include "core/inspector/InspectorState.h"
 #include "core/inspector/InspectorStateClient.h"
 #include "core/inspector/WorkerDebuggerAgent.h"
@@ -57,6 +59,9 @@ V8Inspector::V8Inspector(v8::Isolate* isolate, PassOwnPtr<WorkerThreadDebugger::
     OwnPtrWillBeRawPtr<WorkerDebuggerAgent> workerDebuggerAgent = WorkerDebuggerAgent::create(m_workerThreadDebugger.get(), m_injectedScriptManager.get(), scriptState);
     m_workerDebuggerAgent = workerDebuggerAgent.get();
     m_agents.append(workerDebuggerAgent.release());
+
+    m_agents.append(InspectorProfilerAgent::create(m_injectedScriptManager.get()));
+    m_agents.append(InspectorHeapProfilerAgent::create(m_injectedScriptManager.get()));
 
     m_injectedScriptManager->injectedScriptHost()->init(m_workerDebuggerAgent, nullptr, m_workerThreadDebugger->debugger(), adoptPtr(new InjectedScriptHostClientImpl()));
 }
