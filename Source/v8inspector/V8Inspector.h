@@ -29,7 +29,6 @@ class V8Inspector : public InspectorRuntimeAgent::Client {
 public:
     explicit V8Inspector(v8::Isolate*, PassOwnPtr<WorkerThreadDebugger::ClientMessageLoop>);
     ~V8Inspector();
-    DECLARE_TRACE();
 
     void connectFrontend(InspectorFrontendChannel*);
     void disconnectFrontend();
