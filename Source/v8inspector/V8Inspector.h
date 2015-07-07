@@ -31,13 +31,11 @@ public:
     ~V8Inspector();
     DECLARE_TRACE();
 
-    void registerModuleAgent(PassOwnPtrWillBeRawPtr<InspectorAgent>);
     void connectFrontend(InspectorFrontendChannel*);
     void disconnectFrontend();
     void restoreInspectorStateFromCookie(const String& inspectorCookie);
     void dispatchMessageFromFrontend(const String&);
     void dispose();
-    void interruptAndDispatchInspectorCommands();
 
     void pauseOnStart();
 

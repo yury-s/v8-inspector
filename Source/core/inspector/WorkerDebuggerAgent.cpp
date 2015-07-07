@@ -36,22 +36,6 @@
 
 namespace blink {
 
-namespace {
-
-class RunInspectorCommandsTask final : public V8Debugger::Task {
-public:
-    explicit RunInspectorCommandsTask() { }
-    virtual ~RunInspectorCommandsTask() { }
-    virtual void run() override
-    {
-        printf("RunInspectorCommandsTask::run\n");
-    }
-
-private:
-};
-
-} // namespace
-
 PassOwnPtrWillBeRawPtr<WorkerDebuggerAgent> WorkerDebuggerAgent::create(WorkerThreadDebugger* workerThreadDebugger, InjectedScriptManager* injectedScriptManager, ScriptState* state)
 {
     return adoptPtrWillBeNoop(new WorkerDebuggerAgent(workerThreadDebugger, injectedScriptManager, state));
@@ -66,11 +50,6 @@ WorkerDebuggerAgent::WorkerDebuggerAgent(WorkerThreadDebugger* workerThreadDebug
 
 WorkerDebuggerAgent::~WorkerDebuggerAgent()
 {
-}
-
-void WorkerDebuggerAgent::interruptAndDispatchInspectorCommands()
-{
-    debugger().interruptAndRun(adoptPtr(new RunInspectorCommandsTask()));
 }
 
 void WorkerDebuggerAgent::startListeningV8Debugger()

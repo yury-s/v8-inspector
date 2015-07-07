@@ -70,11 +70,6 @@ V8Inspector::~V8Inspector()
 {
 }
 
-void V8Inspector::registerModuleAgent(PassOwnPtrWillBeRawPtr<InspectorAgent> agent)
-{
-    m_agents.append(agent);
-}
-
 void V8Inspector::connectFrontend(InspectorFrontendChannel* channel)
 {
     ASSERT(!m_frontend);
@@ -118,11 +113,6 @@ void V8Inspector::dispatchMessageFromFrontend(const String& message)
 void V8Inspector::dispose()
 {
     disconnectFrontend();
-}
-
-void V8Inspector::interruptAndDispatchInspectorCommands()
-{
-    m_workerDebuggerAgent->interruptAndDispatchInspectorCommands();
 }
 
 void V8Inspector::resumeStartup()

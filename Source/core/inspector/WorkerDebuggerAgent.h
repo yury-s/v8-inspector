@@ -44,8 +44,6 @@ public:
     static PassOwnPtrWillBeRawPtr<WorkerDebuggerAgent> create(WorkerThreadDebugger*, InjectedScriptManager*, ScriptState*);
     ~WorkerDebuggerAgent() override;
 
-    void interruptAndDispatchInspectorCommands();
-
 private:
 
     WorkerDebuggerAgent(WorkerThreadDebugger*, InjectedScriptManager*, ScriptState*);
