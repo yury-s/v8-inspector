@@ -27,7 +27,6 @@
 #include "bindings/core/v8/V8PerIsolateData.h"
 
 #include "bindings/core/v8/DOMDataStore.h"
-#include "bindings/core/v8/ScriptSourceCode.h"
 #include "bindings/core/v8/V8Binding.h"
 #include "bindings/core/v8/V8ObjectConstructor.h"
 #include "bindings/core/v8/V8RecursionScope.h"

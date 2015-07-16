@@ -129,8 +129,6 @@
         '../bindings/core/v8/ScriptFunctionCall.h',
         '../bindings/core/v8/ScriptRegexp.cpp',
         '../bindings/core/v8/ScriptRegexp.h',
-        '../bindings/core/v8/ScriptSourceCode.cpp',
-        '../bindings/core/v8/ScriptSourceCode.h',
         '../bindings/core/v8/ScriptState.cpp',
         '../bindings/core/v8/ScriptState.h',
         '../bindings/core/v8/ScriptValue.cpp',
